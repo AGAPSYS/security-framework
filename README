@@ -5,6 +5,22 @@ Welcome to the Agapsys Security Framework project.
 
 Attention: The framework is under development stage.
 
+Compiling
+---------
+
+The first build may take a long time as Maven downloads all the
+dependencies.
+
+Dependencies
+------------
+
+Agapsys Security Framework requires Java 7 compatible runtime and depends
+on the following external libraries:
+
+* JUnit (TESTING)
+
+(for detailed information on external dependencies please see pom.xml)
+
 Licensing
 ---------
 
