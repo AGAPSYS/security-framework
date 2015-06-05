@@ -36,8 +36,9 @@ public class RoleRepository extends NamedObjectRepository<Role> {
 	 * @param roleName name of the role to be created. Must be unique in the repository
 	 * @return created role
 	 * @throws DuplicateException if a role with the same name was already created
+	 * @throws IllegalArgumentException if (roleName == null || roleName.isEmpty())
 	 */
-	public Role createRole(String roleName) throws DuplicateException {
+	public Role createRole(String roleName) throws IllegalArgumentException, DuplicateException {
 		if (get(roleName) != null)
 			throw new DuplicateException("An object with the same name is already registered: " + roleName);
 		
@@ -46,7 +47,7 @@ public class RoleRepository extends NamedObjectRepository<Role> {
 		
 		return role;
 	}
-
+	
 	/**
 	 * Gets a role from this repository or creates a new one if there is no such role
 	 * @param roleName role to be obtained/created
