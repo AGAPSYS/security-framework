@@ -34,17 +34,10 @@ public abstract class RoleBasedObject {
 	/**
 	 * Constructor.
 	 * @param roles default roles associated to this object
-	 * @throws IllegalArgumentException if any of the following conditions occurs:
-	 * <ul>
-	 *		<li>roles == null</li>
-	 *		<li>any of given roles is null</li>
-	 * </ul>
-	 * @throws DuplicateException if any of given roles is already associated to this object (either directly of as a child of any associated role).
+	 * @throws IllegalArgumentException if any of given roles is null
+	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).
 	 */
 	public RoleBasedObject(Role...roles) throws IllegalArgumentException, DuplicateException {
-		if (roles == null)
-			throw new IllegalArgumentException("Null roles");
-		
 		for (Role role : roles) {
 			addIndividualRole(role);
 		}
@@ -54,17 +47,10 @@ public abstract class RoleBasedObject {
 	 * Constructor.
 	 * @param roleNames default role names associated to this object. Role 
 	 * instances will be obtained through {@linkplain RoleRepository}
-	 * @throws IllegalArgumentException if any of the following conditions occurs:
-	 * <ul>
-	 *		<li>roleNames == null</li>
-	 *		<li>any of given roles roles is not registered in {@linkplain RoleRepository}</li>
-	 * </ul>
-	 * @throws DuplicateException if any of given roles is already associated to this object (either directly of as a child of any associated role).
+	 * @throws IllegalArgumentException if any of given roles roles is not registered in {@linkplain RoleRepository}
+	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).
 	 */
 	public RoleBasedObject(String...roleNames) throws IllegalArgumentException, DuplicateException  {
-		if (roleNames == null)
-			throw new IllegalArgumentException("Null roleNames");
-		
 		for (String roleName : roleNames) {
 			Role role = RoleRepository.getSingletonInstance().get(roleName);
 			
@@ -116,15 +102,14 @@ public abstract class RoleBasedObject {
 	 * @param roles to be associated
 	 * @throws IllegalArgumentException if any of given conditions occurs:
 	 * <ul>
-	 *		<li>roles==null</li>
 	 *		<li>roles.length == 0</li>
 	 *		<li>any role given roles elements is null</li>
 	 * </ul>
 	 * @throws DuplicateException if given role was already associated to this object (either directly or as child of any associated role)
 	 */
 	public void addRole(Role...roles) throws DuplicateException, IllegalArgumentException {
-		if (roles == null || roles.length == 0)
-			throw new IllegalArgumentException("Null/Empty roles");
+		if (roles.length == 0)
+			throw new IllegalArgumentException("Empty roles");
 		
 		boolean update = false;
 		for (Role role : roles) {
@@ -140,15 +125,14 @@ public abstract class RoleBasedObject {
 	 * @param roleNames roles to be added. Role instances will be obtained through {@linkplain RoleRepository}
 	 * @throws IllegalArgumentException if any of given conditions occurs:
 	 * <ul>
-	 *		<li>roleNames==null</li>
 	 *		<li>roleNames.length == 0</li>
 	 *		<li>any of given roles roles is not registered in {@linkplain RoleRepository}</li>
 	 * </ul>
 	 * @throws DuplicateException if given role was already associated to this object (either directly or as child of any associated role)
 	 */
 	public void addRole(String...roleNames) throws DuplicateException, IllegalArgumentException {
-		if (roleNames == null || roleNames.length == 0)
-			throw new IllegalArgumentException("Null/Empty roleNames");
+		if (roleNames.length == 0)
+			throw new IllegalArgumentException("Empty roleNames");
 		
 		boolean update = false;
 		
@@ -169,11 +153,11 @@ public abstract class RoleBasedObject {
 	 * Removes the association of a role with this instance.
 	 * @param roles role to be removed from association set. If given role is not
 	 * associated to this instance, nothing happens.
-	 * @throws roles if roles == null or roles.length == 0 or any of given roles == null
+	 * @throws roles if roles.length == 0 or any of given roles == null
 	 */
 	public void removeRole(Role...roles) throws IllegalArgumentException {
-		if (roles == null || roles.length == 0)
-			throw new IllegalArgumentException("Null/Empty roles");
+		if (roles.length == 0)
+			throw new IllegalArgumentException("Empty roles");
 		
 		boolean update = false;
 		
@@ -192,11 +176,11 @@ public abstract class RoleBasedObject {
 	 * Removes the association of a role with this instance.
 	 * @param roleNames role to be removed from association set. If given role is not
 	 * associated to this instance, nothing happens. Role instances will be obtained through {@linkplain RoleRepository}
-	 * @throws roles if roles == null or roles.length == 0 or any of given roles is not registered in {@linkplain RoleRepository}
+	 * @throws roles if roles.length == 0 or any of given roles is not registered in {@linkplain RoleRepository}
 	 */
 	public void removeRole(String...roleNames) throws IllegalArgumentException {
-		if (roleNames == null || roleNames.length == 0)
-			throw new IllegalArgumentException("Null/Empty roleNames");
+		if (roleNames.length == 0)
+			throw new IllegalArgumentException("Empty roleNames");
 		
 		boolean update = false;
 		

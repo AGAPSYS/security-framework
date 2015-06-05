@@ -40,12 +40,8 @@ public abstract class AbstractSecuredAction extends RoleBasedObject {
 	 * @param requiredRoles required roles for execution. If any of the required
 	 * roles are not satisfied during action execution an exception will be 
 	 * thrown.
-	 * @throws IllegalArgumentException if any of the following conditions occurs:
-	 * <ul>
-	 *		<li>requiredRoles == null</li>
-	 *		<li>any of given requiredRoles is null</li>
-	 * </ul>
-	 * @throws DuplicateException if any of given roles is already associated to this object (either directly of as a child of any associated role).
+	 * @throws IllegalArgumentException if any of given roles is null
+	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).
 	 * @see RoleBasedObject#RoleBasedObject(Role...)
 	 * @see AbstractSecuredAction#run(User, Object...) 
 	 */
@@ -59,13 +55,8 @@ public abstract class AbstractSecuredAction extends RoleBasedObject {
 	 * @param requiredRoleNames required roles for execution. If any of required roles
 	 * are not available during action execution an exception will be thrown. Instances
 	 * will be obtained through {@linkplain RoleRepository}
-	 * @throws IllegalArgumentException if any of the following conditions occurs:
-	 * <ul>
-	 *		<li>requiredRoleNames == null</li>
-	 *		<li>any of given roles roles is not registered in {@linkplain RoleRepository}</li>
-	 * </ul>
-	 * @throws DuplicateException if any of given roles is already associated to this object (either directly of as a child of any associated role).
-	 * @see RoleBasedObject#RoleBasedObject(String...) 
+	 * @throws IllegalArgumentException if any of given roles roles is not registered in {@linkplain RoleRepository}
+	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).	 * @see RoleBasedObject#RoleBasedObject(String...) 
 	 * @see AbstractSecuredAction#run(User, Object...) 
 	 */
 	public AbstractSecuredAction(String...requiredRoleNames) throws IllegalArgumentException, DuplicateException {
@@ -74,7 +65,7 @@ public abstract class AbstractSecuredAction extends RoleBasedObject {
 	
 	/** 
 	 * Validates an user against action required roles.
-	 * @param user user calling the action
+	 * @param user user calling the action (can be null only if there are no required roles)
 	 * @param params parameters passed to action
 	 * @throws SecurityException if given user does not fulfill action required roles
 	 */
