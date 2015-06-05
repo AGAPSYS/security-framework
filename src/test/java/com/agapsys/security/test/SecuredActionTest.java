@@ -17,7 +17,7 @@
 package com.agapsys.security.test;
 
 import com.agapsys.security.Role;
-import com.agapsys.security.AbstractSecuredAction;
+import com.agapsys.security.AbstractAction;
 import com.agapsys.security.RoleBasedObject;
 import com.agapsys.security.RoleRepository;
 import com.agapsys.security.User;
@@ -47,36 +47,36 @@ public class SecuredActionTest {
 		}
 	}
 	
-	private static final AbstractSecuredAction ACTION_ADD = new AbstractSecuredAction("AUTHENTICATED", "ADD") {
+	private static final AbstractAction ACTION_ADD = new AbstractAction("AUTHENTICATED", "ADD") {
 		@Override
 		protected void run(User user, Object...params) {}
 	};
 	
-	private static final AbstractSecuredAction ACTION_REMOVE = new AbstractSecuredAction("AUTHENTICATED", "REMOVE") {
+	private static final AbstractAction ACTION_REMOVE = new AbstractAction("AUTHENTICATED", "REMOVE") {
 		@Override
 		protected void run(User user, Object...params) {}
 		
 	};
 	
-	private static final AbstractSecuredAction ACTION_RW = new AbstractSecuredAction("AUTHENTICATED", "RW") {
+	private static final AbstractAction ACTION_RW = new AbstractAction("AUTHENTICATED", "RW") {
 		@Override
 		protected void run(User user, Object...params) {}
 		
 	};
 
-	private static final AbstractSecuredAction ACTION_AUTHENTICATED = new AbstractSecuredAction("AUTHENTICATED") {
+	private static final AbstractAction ACTION_AUTHENTICATED = new AbstractAction("AUTHENTICATED") {
 		@Override
 		protected void run(User user, Object...params) {}
 		
 	};
 	
-	private static final AbstractSecuredAction ACTION_EXECUTE = new AbstractSecuredAction("AUTHENTICATED", "EXECUTE") {
+	private static final AbstractAction ACTION_EXECUTE = new AbstractAction("AUTHENTICATED", "EXECUTE") {
 		@Override
 		protected void run(User user, Object...params) {}
 		
 	};
 	
-	private static final AbstractSecuredAction ACTION_PUBLIC = new AbstractSecuredAction() {
+	private static final AbstractAction ACTION_PUBLIC = new AbstractAction() {
 		@Override
 		protected void run(User user, Object...params) {}
 	};

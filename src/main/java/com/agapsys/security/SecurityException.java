@@ -18,11 +18,11 @@ package com.agapsys.security;
 
 /** Represents a security violation attempt exception while running an action. */
 public class SecurityException extends Exception {
-	private final AbstractSecuredAction action;
+	private final AbstractAction action;
 	private final User user;
 	private final Object[] params;
 
-	SecurityException(AbstractSecuredAction action, User user, Object[] params, String message) {
+	SecurityException(AbstractAction action, User user, Object[] params, String message) {
 		super(message);
 		this.action = action;
 		this.user = user;
@@ -30,7 +30,7 @@ public class SecurityException extends Exception {
 	}
 
 	/** Returns the action where this exception occurred. */
-	public AbstractSecuredAction getAction() {
+	public AbstractAction getAction() {
 		return this.action;
 	}
 	

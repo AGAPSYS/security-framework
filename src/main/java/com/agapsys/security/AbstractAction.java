@@ -23,14 +23,14 @@ import java.util.Set;
  * Represents an action that will be executed only if required roles are 
  * available for execution.
  */
-public abstract class AbstractSecuredAction extends RoleBasedObject {	
+public abstract class AbstractAction extends RoleBasedObject {	
 	
 	/** 
 	 * Constructor
 	 * Creates an action without required roles
 	 * @see RoleBasedObject#RoleBasedObject()
 	 */
-	public AbstractSecuredAction() {
+	public AbstractAction() {
 		super();
 	}
 	
@@ -45,7 +45,7 @@ public abstract class AbstractSecuredAction extends RoleBasedObject {
 	 * @see RoleBasedObject#RoleBasedObject(Role...)
 	 * @see AbstractSecuredAction#run(User, Object...) 
 	 */
-	public AbstractSecuredAction(Role...requiredRoles) throws IllegalArgumentException, DuplicateException {
+	public AbstractAction(Role...requiredRoles) throws IllegalArgumentException, DuplicateException {
 		super(requiredRoles);
 	}
 	
@@ -59,7 +59,7 @@ public abstract class AbstractSecuredAction extends RoleBasedObject {
 	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).	 * @see RoleBasedObject#RoleBasedObject(String...) 
 	 * @see AbstractSecuredAction#run(User, Object...) 
 	 */
-	public AbstractSecuredAction(String...requiredRoleNames) throws IllegalArgumentException, DuplicateException {
+	public AbstractAction(String...requiredRoleNames) throws IllegalArgumentException, DuplicateException {
 		super(requiredRoleNames);
 	}
 	
