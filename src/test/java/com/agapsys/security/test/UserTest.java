@@ -144,7 +144,14 @@ public class UserTest {
 	
 	@Test (expected = DuplicateException.class)
 	public void addRecursiveDuplicateRoleName() {
+		Role rootRole = roles.createRole("ROOT");
+		Role childRole = roles.createRole("CHILD");
 		
+		rootRole.addChild(childRole);
+		
+		SimpleUser user = new SimpleUser();
+		user.addRole("ROOT");
+		user.addRole("CHILD"); // <-- childRole is child of rootRole
 	}
 	
 	@Test
