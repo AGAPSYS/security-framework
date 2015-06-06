@@ -18,34 +18,31 @@ package com.agapsys.security.test;
 
 import com.agapsys.security.Role;
 import com.agapsys.security.AbstractAction;
-import com.agapsys.security.RoleBasedObject;
+import com.agapsys.security.AbstractUser;
 import com.agapsys.security.RoleRepository;
 import com.agapsys.security.User;
 import com.agapsys.security.SecurityException;
+import org.junit.AfterClass;
 import org.junit.Test;
 
-public class SecuredActionTest {
+public class ActionTest {
 	// CLASS SCOPE =============================================================
 	private static final RoleRepository ROLES = RoleRepository.getSingletonInstance();
 	private static final Role DEFAULT_AUTHENTICATED_ROLE = ROLES.createRole("AUTHENTICATED");
 	
-	static {	
+	static {
 		ROLES.createRole("ADD");
 		ROLES.createRole("REMOVE");
 		ROLES.getOrCreate("RW");
 		ROLES.getOrCreate("EXECUTE");
-		
 		ROLES.get("RW").addChild("ADD", "REMOVE");
 	}
-	
-	private static class TestUser extends RoleBasedObject implements User {
 		
-		public TestUser(String...roles) {
-			super(DEFAULT_AUTHENTICATED_ROLE);
-			
-			addRole(roles);
-		}
+	@AfterClass
+	public static void afterClass() {	
+		ROLES.clear();
 	}
+	
 	
 	private static final AbstractAction ACTION_ADD = new AbstractAction("AUTHENTICATED", "ADD") {
 		@Override
@@ -81,6 +78,17 @@ public class SecuredActionTest {
 		protected void run(User user, Object...params) {}
 	};
 
+	
+	/** User with a {@linkplain ActionTest#DEFAULT_AUTHENTICATED_ROLE}. */
+	private static class TestUser extends AbstractUser {
+		
+		public TestUser(String...roles) {
+			super(DEFAULT_AUTHENTICATED_ROLE);
+			
+			addRole(roles);
+		}
+	}
+	
 	private static final TestUser USER_ADD = new TestUser("ADD");
 	private static final TestUser USER_REMOVE = new TestUser("REMOVE");
 	private static final TestUser USER_RW = new TestUser("RW");
@@ -89,7 +97,7 @@ public class SecuredActionTest {
 	
 	// INSTANCE SCOPE ==========================================================	
 	@Test
-	public void testSecurityOk() throws SecurityException {
+	public void allowedExecution() throws SecurityException {
 		ACTION_PUBLIC.execute(null);
 		ACTION_PUBLIC.execute(USER_ADD);
 
@@ -109,17 +117,18 @@ public class SecuredActionTest {
 	}
 
 	@Test(expected = SecurityException.class)
-	public void testUnauthenticatedUser() throws SecurityException {
+	public void unauthenticatedUser() throws SecurityException {
 		ACTION_AUTHENTICATED.execute(null);
 	}
 	
 	@Test(expected = SecurityException.class)
-	public void testInsufficientPrivileges() throws SecurityException {
+	public void insufficientPrivileges() throws SecurityException {
 		ACTION_ADD.execute(USER_REMOVE);
 	}
 	
 	@Test(expected = SecurityException.class)
-	public void testInsufficientPrivileges2() throws SecurityException {
+	public void insufficientPrivileges2() throws SecurityException {
 		ACTION_RW.execute(USER_REMOVE);
 	}
+	// =========================================================================
 }

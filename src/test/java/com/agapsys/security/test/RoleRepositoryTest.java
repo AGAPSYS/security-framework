@@ -16,58 +16,64 @@
 
 package com.agapsys.security.test;
 
+import com.agapsys.security.DuplicateException;
 import com.agapsys.security.Role;
 import com.agapsys.security.RoleRepository;
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
 public class RoleRepositoryTest {
-	private static final RoleRepository ROLES = RoleRepository.getSingletonInstance();
-	
+	private static final RoleRepository roles = RoleRepository.getSingletonInstance();
+
 	@Before
 	public void before() {
-		ROLES.clear();
+		roles.clear();
+	}
+	
+	@After
+	public void after() {
+		roles.clear();
 	}
 	
 	@Test
-	public void testAddSingleRole() {
+	public void addSingleRole() {
 		final String testRole = "test";
 		
-		assertNull(ROLES.get(testRole));
+		assertNull(roles.get(testRole));
 		
-		Role role = ROLES.createRole(testRole);
+		Role role = roles.createRole(testRole);
 		
-		assertEquals(role, ROLES.get(testRole));
+		assertEquals(role, roles.get(testRole));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void testAddDupplicateRole() {
-		ROLES.createRole("TEST");
-		ROLES.createRole("TEST");
-	}
-	
-	@Test
-	public void testRemoveRole() {
-		Role role = ROLES.createRole("TEST");
-		assertEquals(role, ROLES.get("TEST"));
-		
-		ROLES.remove("TEST");
-		assertNull(ROLES.get("TEST"));
+	@Test(expected = DuplicateException.class)
+	public void addDuplicateRole() {
+		roles.createRole("TEST");
+		roles.createRole("TEST");
 	}
 	
 	@Test
-	public void testClear() {
-		Role role1 = ROLES.createRole("TEST1");
-		Role role2 = ROLES.createRole("TEST2");
+	public void removeRole() {
+		Role role = roles.createRole("TEST");
+		assertEquals(role, roles.get("TEST"));
 		
-		assertEquals(role1, ROLES.get("TEST1"));
-		assertEquals(role2, ROLES.get("TEST2"));
-		
-		ROLES.clear();
-		
-		assertNull(ROLES.get("TEST1"));
-		assertNull(ROLES.get("TEST2"));
+		roles.remove("TEST");
+		assertNull(roles.get("TEST"));
 	}
 	
+	@Test
+	public void clearRoles() {
+		Role role1 = roles.createRole("TEST1");
+		Role role2 = roles.createRole("TEST2");
+		
+		assertEquals(role1, roles.get("TEST1"));
+		assertEquals(role2, roles.get("TEST2"));
+		
+		roles.clear();
+		
+		assertNull(roles.get("TEST1"));
+		assertNull(roles.get("TEST2"));
+	}
 }

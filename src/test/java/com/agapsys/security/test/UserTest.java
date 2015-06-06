@@ -16,6 +16,7 @@
 
 package com.agapsys.security.test;
 
+import com.agapsys.security.DuplicateException;
 import com.agapsys.security.Role;
 import com.agapsys.security.RoleBasedObject;
 import com.agapsys.security.RoleRepository;
@@ -23,9 +24,11 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class UserTest {
+	// CLASS SCOPE =============================================================
 	private static class SimpleUser extends RoleBasedObject {
 
 		public SimpleUser() {
@@ -38,9 +41,10 @@ public class UserTest {
 		public SimpleUser(String... defaultRoles) {
 			super(defaultRoles);
 		}
-	
 	}
+	// =========================================================================
 	
+	// INSTANCE SCOPE ==========================================================
 	private RoleRepository roles = RoleRepository.getSingletonInstance();
 	
 	@Before
@@ -49,7 +53,7 @@ public class UserTest {
 	}
 	
 	@Test
-	public void testRoleInstancesInConstructor() {
+	public void passingRolesInConstructor() {
 		Role test1 = roles.createRole("TEST_1");
 		Role test2 = roles.createRole("TEST_2");
 		Role test3 = roles.createRole("TEST_3");
@@ -64,7 +68,7 @@ public class UserTest {
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
-	public void testNullRoleInstanceVarArgsInConstructor() {
+	public void passingNullInRoleVarArgsConstructor() {
 		Role test1 = roles.createRole("TEST_1");
 		Role test2 = roles.createRole("TEST_2");
 		Role test3 = roles.createRole("TEST_3");
@@ -73,13 +77,13 @@ public class UserTest {
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
-	public void testNullRoleInstanceInConstructor() {
+	public void passingNullInRoleVarArgsConstructor2() {
 		SimpleUser user = new SimpleUser((Role)null);
 	}
 	
 	
 	@Test
-	public void testRoleNamesInConstructor() {
+	public void passingRoleNamesInConstructor() {
 		Role test1 = roles.createRole("TEST_1");
 		Role test2 = roles.createRole("TEST_2");
 		Role test3 = roles.createRole("TEST_3");
@@ -94,7 +98,7 @@ public class UserTest {
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
-	public void testNullRoleNameVarArgsInConstructor() {
+	public void passingNullRoleNameInConstructor() {
 		Role test1 = roles.createRole("TEST_1");
 		Role test2 = roles.createRole("TEST_2");
 		Role test3 = roles.createRole("TEST_3");
@@ -103,34 +107,48 @@ public class UserTest {
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
-	public void testNullRoleNameInConstructor() {
+	public void passingNullRoleNameInConstructor2() {
 		SimpleUser user = new SimpleUser((String)null);
 	}
 	
-	@Test (expected = IllegalArgumentException.class)
-	public void testAddDupplicateRoleInstance() {
+	
+	@Test (expected = DuplicateException.class)
+	public void addDirectDuplicateRole() {
 		Role test1 = roles.createRole("TEST_1");
-		Role test2 = roles.createRole("TEST_2");
-		Role test3 = roles.createRole("TEST_3");
 		
 		SimpleUser user = new SimpleUser();
 		user.addRole(test1);
 		user.addRole(test1);
 	}
 	
-	@Test (expected = IllegalArgumentException.class)
-	public void testAddDupplicateRoleName() {
-		Role test1 = roles.createRole("TEST_1");
-		Role test2 = roles.createRole("TEST_2");
-		Role test3 = roles.createRole("TEST_3");
+	@Test (expected = DuplicateException.class)
+	public void addDirectDuplicateRoleName() {
+		roles.createRole("TEST_1");
 		
 		SimpleUser user = new SimpleUser();
-		user.addRole("TEST_2");
-		user.addRole("TEST_2");
+		user.addRole("TEST_1");
+		user.addRole("TEST_1");
+	}
+	
+	@Test (expected = DuplicateException.class)
+	public void addRecursiveDuplicateRole() {
+		Role rootRole = roles.createRole("ROOT");
+		Role childRole = roles.createRole("CHILD");
+		
+		rootRole.addChild(childRole);
+		
+		SimpleUser user= new SimpleUser();
+		user.addRole(rootRole);
+		user.addRole(childRole); // <-- childRole is child of rootRole
+	}
+	
+	@Test (expected = DuplicateException.class)
+	public void addRecursiveDuplicateRoleName() {
+		
 	}
 	
 	@Test
-	public void testRemoveRoleName() {
+	public void removeRoleByName() {
 		Role test1 = roles.createRole("TEST_1");
 		Role test2 = roles.createRole("TEST_2");
 		Role test3 = roles.createRole("TEST_3");
@@ -142,11 +160,11 @@ public class UserTest {
 		Set<Role> expected = new LinkedHashSet<>();
 		expected.add(test1);
 		
-		assertEquals(user.getRoles(), expected);
+		assertEquals(expected, user.getRoles());
 	}
 	
 	@Test
-	public void testRemoveRoleInstance() {
+	public void removeRoleByInstance() {
 		Role test1 = roles.createRole("TEST_1");
 		Role test2 = roles.createRole("TEST_2");
 		Role test3 = roles.createRole("TEST_3");
@@ -158,20 +176,18 @@ public class UserTest {
 		expected.add(test1);
 		expected.add(test3);
 		
-		assertEquals(user.getRoles(), expected);
+		assertEquals(expected, user.getRoles());
 	}
 	
 	@Test
-	public void testClearRoles() {
+	public void clearRoles() {
 		Role test1 = roles.createRole("TEST_1");
 		Role test2 = roles.createRole("TEST_2");
 		Role test3 = roles.createRole("TEST_3");
 		
 		SimpleUser user = new SimpleUser(test1, test2, test3);
 		user.clearRoles();
-		
-		Set<Role> expected = new LinkedHashSet<>();
-		
-		assertEquals(user.getRoles(), expected);
+				
+		assertTrue(user.getRoles().isEmpty());
 	}
 }

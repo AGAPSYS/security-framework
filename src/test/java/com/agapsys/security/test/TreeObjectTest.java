@@ -17,7 +17,7 @@
 package com.agapsys.security.test;
 
 import com.agapsys.security.TreeObject;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.junit.Test;
@@ -48,9 +48,7 @@ public class TreeObjectTest {
 	private Set<TestTreeObject> getSet(TestTreeObject...objects) {
 		Set<TestTreeObject> set = new LinkedHashSet<>();
 		
-		for (TestTreeObject obj : objects) {
-			set.add(obj);
-		}
+		set.addAll(Arrays.asList(objects));
 		
 		return set;
 	}
@@ -58,7 +56,7 @@ public class TreeObjectTest {
 	
 	// INSTANCE SCOPE ==========================================================
 	@Test
-	public void testGetChildren() {
+	public void getChildren() {
 		TestTreeObject testObject = new TestTreeObject();
 		
 		assertFalse(testObject.hasChildren());
@@ -69,7 +67,7 @@ public class TreeObjectTest {
 	}
 	
 	@Test
-	public void testHasChildren() {
+	public void hasChildren() {
 		TestTreeObject root1 = new TestTreeObject("ROOT1");
 		TestTreeObject root1Child1 = new TestTreeObject("ROOT1/CHILD1");
 		TestTreeObject root1Child1Child = new TestTreeObject("ROOT1/CHILD1/CHILD");
@@ -88,7 +86,7 @@ public class TreeObjectTest {
 	}
 	
 	@Test
-	public void testAddItself()  {
+	public void addItself()  {
 		try {
 			TestTreeObject testObject = new TestTreeObject();
 			testObject.addChild(testObject);
@@ -99,7 +97,7 @@ public class TreeObjectTest {
 	
 	// testHasChild ------------------------------------------------------------
 	@Test
-	public void testHasChildDirect() {
+	public void directHasChild() {
 		TestTreeObject root1 = new TestTreeObject("ROOT1");
 		TestTreeObject root1Child1 = new TestTreeObject("ROOT1/CHILD1");
 		TestTreeObject root1Child1Child = new TestTreeObject("ROOT1/CHILD1/CHILD");
@@ -117,7 +115,7 @@ public class TreeObjectTest {
 	}
 	
 	@Test
-	public void testHasChildRecursive() {
+	public void recursiveHasChild() {
 		TestTreeObject root1 = new TestTreeObject("ROOT1");
 		TestTreeObject root1Child1 = new TestTreeObject("ROOT1/CHILD1");
 		TestTreeObject root1Child1Child = new TestTreeObject("ROOT1/CHILD1/CHILD");
@@ -137,7 +135,7 @@ public class TreeObjectTest {
 	
 	// testHasChildrenSet ------------------------------------------------------	
 	@Test
-	public void testHashChildrenSetDirect() {
+	public void directHasChildrenSet() {
 		TestTreeObject root1 = new TestTreeObject("ROOT1");
 		TestTreeObject root1Child1 = new TestTreeObject("ROOT1/CHILD1");
 		TestTreeObject root1Child1Child = new TestTreeObject("ROOT1/CHILD1/CHILD");
@@ -155,7 +153,7 @@ public class TreeObjectTest {
 	}
 	
 	@Test
-	public void testHashChildrenSetRecursive() {
+	public void recursiveHasChildrenSet() {
 		TestTreeObject root1 = new TestTreeObject("ROOT1");
 		TestTreeObject root1Child1 = new TestTreeObject("ROOT1/CHILD1");
 		TestTreeObject root1Child1Child = new TestTreeObject("ROOT1/CHILD1/CHILD");
@@ -175,7 +173,7 @@ public class TreeObjectTest {
 	
 	// testBelongsTo -----------------------------------------------------------
 	@Test
-	public void testBelongsToDirect() {
+	public void directBelongsTo() {
 		TestTreeObject root1 = new TestTreeObject("ROOT1");
 		TestTreeObject root1Child1 = new TestTreeObject("ROOT1/CHILD1");
 		TestTreeObject root1Child1Child = new TestTreeObject("ROOT1/CHILD1/CHILD");
@@ -195,7 +193,7 @@ public class TreeObjectTest {
 	}
 	
 	@Test
-	public void testBelongsToRecursive() {
+	public void recursiveBelongsTo() {
 		TestTreeObject root1 = new TestTreeObject("ROOT1");
 		TestTreeObject root1Child1 = new TestTreeObject("ROOT1/CHILD1");
 		TestTreeObject root1Child1Child = new TestTreeObject("ROOT1/CHILD1/CHILD");
@@ -216,7 +214,7 @@ public class TreeObjectTest {
 
 	// testBelongsToSet --------------------------------------------------------
 	@Test
-	public void testBelongsToSetDirect() {
+	public void directBelongsToSet() {
 		TestTreeObject root1 = new TestTreeObject("ROOT1");
 		TestTreeObject root1Child1 = new TestTreeObject("ROOT1/CHILD1");
 		TestTreeObject root1Child1Child = new TestTreeObject("ROOT1/CHILD1/CHILD");
@@ -233,7 +231,7 @@ public class TreeObjectTest {
 	}
 	
 	@Test
-	public void testBelongsToSetRecursive() {
+	public void recursiveBelongsToSet() {
 		TestTreeObject root1 = new TestTreeObject("ROOT1");
 		TestTreeObject root1Child1 = new TestTreeObject("ROOT1/CHILD1");
 		TestTreeObject root1Child1Child = new TestTreeObject("ROOT1/CHILD1/CHILD");
@@ -249,4 +247,5 @@ public class TreeObjectTest {
 		assertTrue(root1Child1Child.belongsTo(getSet(root1, root2), true));
 	}
 	// -------------------------------------------------------------------------
+	// =========================================================================
 }
