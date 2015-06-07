@@ -50,7 +50,7 @@ public abstract class AbstractAction extends RoleBasedObject {
 	/**
 	 * Constructor.
 	 * Creates an action with a given set of required roles.
-	 * @param requiredRoles required roles for execution.
+	 * @param requiredRoleNames required roles for execution.
 	 * @throws IllegalArgumentException if any of given roles is null
 	 * @throws RoleNotFoundException if any of given roleNames is not registered in {@linkplain RoleRepository}
 	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).

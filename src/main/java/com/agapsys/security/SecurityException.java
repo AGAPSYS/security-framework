@@ -29,17 +29,17 @@ public class SecurityException extends Exception {
 		this.params = params;
 	}
 
-	/** Returns the action where this exception occurred. */
+	/** @return The action where this exception occurred. */
 	public AbstractAction getAction() {
 		return this.action;
 	}
 	
-	/** Returns the user executing the action. */
+	/** @return The user executing the action. */
 	public User getUser() {
 		return user;
 	}
 	
-	/** Returns the parameters passed when action was called. */
+	/** @return The parameters passed when action was called. */
 	public Object[] getParams() {
 		return params;
 	}
