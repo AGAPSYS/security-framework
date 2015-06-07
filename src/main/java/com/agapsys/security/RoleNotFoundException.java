@@ -16,9 +16,15 @@
 
 package com.agapsys.security;
 
-/** Represents an object with an associated name. */
-public interface NamedObject {
+public class RoleNotFoundException extends RuntimeException {
+	private final String roleName;
 	
-	/** @return The name associated with this instance. */
-	public String getName();
+	RoleNotFoundException(String roleName) {
+		super(String.format("Role not found: " + roleName));
+		this.roleName = roleName;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
 }

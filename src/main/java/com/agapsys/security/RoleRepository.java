@@ -21,7 +21,7 @@ public class RoleRepository extends NamedObjectRepository<Role> {
 	// CLASS SCOPE =============================================================
 	private static final RoleRepository singleton = new RoleRepository();
 	
-	/** Returns a singleton instance for this application. */
+	/** @return A singleton instance for this application. */
 	public static RoleRepository getSingletonInstance() {
 		return singleton;
 	}
@@ -51,9 +51,13 @@ public class RoleRepository extends NamedObjectRepository<Role> {
 	/**
 	 * Gets a role from this repository or creates a new one if there is no such role
 	 * @param roleName role to be obtained/created
-	 * @param createIfNotExist defines if requested role will be created if it does not exist
+	 * @return role instance
+	 * @throws IllegalArgumentException if (roleName == null || roleName.isEmpty())
 	 */
-	public Role getOrCreate(String roleName) {
+	public Role getOrCreate(String roleName) throws IllegalArgumentException {
+		if (roleName == null || roleName.isEmpty())
+			throw new IllegalArgumentException("Null/Empty roleName");
+		
 		Role role = get(roleName);
 		
 		if (role == null) {

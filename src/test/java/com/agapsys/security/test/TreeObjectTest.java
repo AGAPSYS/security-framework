@@ -16,6 +16,7 @@
 
 package com.agapsys.security.test;
 
+import com.agapsys.security.CircularReferenceException;
 import com.agapsys.security.TreeObject;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -85,14 +86,10 @@ public class TreeObjectTest {
 		assertFalse(root2.hasChildren());
 	}
 	
-	@Test
+	@Test(expected = CircularReferenceException.class)
 	public void addItself()  {
-		try {
-			TestTreeObject testObject = new TestTreeObject();
-			testObject.addChild(testObject);
-		} catch (IllegalArgumentException ex) {
-			assertTrue(ex.getMessage().contains("itself"));
-		}
+		TestTreeObject testObject = new TestTreeObject();
+		testObject.addChild(testObject);
 	}
 	
 	// testHasChild ------------------------------------------------------------

@@ -16,9 +16,9 @@
 
 package com.agapsys.security;
 
-/** Represents an object with an associated name. */
-public interface NamedObject {
-	
-	/** @return The name associated with this instance. */
-	public String getName();
+public class CircularReferenceException extends RuntimeException {
+
+	CircularReferenceException(String message) {
+		super(message);
+	}
 }

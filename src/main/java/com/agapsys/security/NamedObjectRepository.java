@@ -49,7 +49,7 @@ public class NamedObjectRepository<T extends NamedObject> {
 	
 	/** 
 	 * Removes an object with given name from this repository.
-	 * If there is no such object, nothing happens.
+	 * @param objName name of the object to be removed. If there is no such object, nothing happens.
 	 * @throws IllegalArgumentException if objName is null or empty
 	 */
 	public void remove(String objName) throws IllegalArgumentException {
@@ -60,8 +60,8 @@ public class NamedObjectRepository<T extends NamedObject> {
 	}
 	
 	/**
-	 * Returns an object with given name from this repository.
-	 * If there is no such object, returns null.
+	 * @return an object with given name from this repository.
+	 * @param objName name of the object to be returned. If there is no such object, returns null.
 	 * @throws IllegalArgumentException if objName is null or empty
 	 */
 	public T get(String objName) throws IllegalArgumentException {
@@ -76,7 +76,10 @@ public class NamedObjectRepository<T extends NamedObject> {
 		map.clear();
 	}
 
-	/** Returns a boolean indicating if an object with given name is registered .*/
+	/** 
+	 * @return A boolean indicating if an object with given name is registered .
+	 * @param objName object name
+	 */
 	public boolean contains(String objName) {
 		return map.containsKey(objName);
 	}

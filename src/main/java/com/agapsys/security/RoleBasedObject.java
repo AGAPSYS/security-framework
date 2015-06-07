@@ -38,39 +38,54 @@ public abstract class RoleBasedObject {
 	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).
 	 */
 	public RoleBasedObject(Role...roles) throws IllegalArgumentException, DuplicateException {
+		int i = 0;
+		
 		for (Role role : roles) {
-			addIndividualRole(role);
+			addIndividualRole(role, i);
+			i++;
 		}
 	}
 	
 	/**
 	 * Constructor.
-	 * @param roleNames default role names associated to this object. Role 
-	 * instances will be obtained through {@linkplain RoleRepository}
-	 * @throws IllegalArgumentException if any of given roles roles is not registered in {@linkplain RoleRepository}
+	 * @param roleNames default role names associated to this object. Role instances will be obtained through {@linkplain RoleRepository}
+	 * @throws IllegalArgumentException if any of given role names is null/empty
 	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).
+	 * @throws RoleNotFoundException if any of given roleNames is not registered in {@linkplain RoleRepository}
 	 */
-	public RoleBasedObject(String...roleNames) throws IllegalArgumentException, DuplicateException  {
+	public RoleBasedObject(String...roleNames) throws IllegalArgumentException, DuplicateException, RoleNotFoundException  {
+		RoleRepository roleRepo = RoleRepository.getSingletonInstance();
+		
+		int i = 0;
 		for (String roleName : roleNames) {
-			Role role = RoleRepository.getSingletonInstance().get(roleName);
+			if (roleName == null || roleName.isEmpty())
+				throw new IllegalArgumentException("Null/Empty roleName at index " + i);
+			
+			Role role = roleRepo.get(roleName);
 			
 			if (role == null)
-				throw new IllegalArgumentException("Role not found: " + roleName);
+				throw new RoleNotFoundException(roleName);
 			
-			addIndividualRole(role);
+			addIndividualRole(role, -1);
+			i++;
 		}
 	}
 	
 	/**
 	 * Adds an individual role to associated role set.
 	 * @param role role to be added
+	 * @param index reference index in varargs calls or null for fixed args calls
 	 * @return a boolean indicating if given role was added to associated role set
 	 * @throws DuplicateException if given role was already associated to this object (either directly or as child of any associated role)
 	 * @throws IllegalArgumentException if given role is null
 	 */
-	private boolean addIndividualRole(Role role) throws DuplicateException, IllegalArgumentException {
-		if (role == null)
-			throw new IllegalArgumentException("Null role");
+	private boolean addIndividualRole(Role role, int index) throws DuplicateException, IllegalArgumentException {
+		if (role == null) {
+			if (index == -1)
+				throw new IllegalArgumentException("Null role");
+			else
+				throw new IllegalArgumentException("Null role at index " + index);
+		}
 	
 		for (Role tmpRole : this.roles) {
 			if (tmpRole.equals(role) || tmpRole.hasChild(role, true)) {
@@ -89,7 +104,7 @@ public abstract class RoleBasedObject {
 		readOnlyRoles = Collections.unmodifiableSet(roles);
 	}
 	
-	/** Returns a read-only set of roles associated to this instance. */
+	/** @return a read-only set of roles associated to this instance. */
 	public Set<Role> getRoles() {
 		if (readOnlyRoles == null)
 			updateReadOnlyRoles();
@@ -100,11 +115,7 @@ public abstract class RoleBasedObject {
 	/** 
 	 * Associates given roles to this object
 	 * @param roles to be associated
-	 * @throws IllegalArgumentException if any of given conditions occurs:
-	 * <ul>
-	 *		<li>roles.length == 0</li>
-	 *		<li>any role given roles elements is null</li>
-	 * </ul>
+	 * @throws IllegalArgumentException if roles.length == 0 or any given role is null
 	 * @throws DuplicateException if given role was already associated to this object (either directly or as child of any associated role)
 	 */
 	public void addRole(Role...roles) throws DuplicateException, IllegalArgumentException {
@@ -112,8 +123,11 @@ public abstract class RoleBasedObject {
 			throw new IllegalArgumentException("Empty roles");
 		
 		boolean update = false;
+		
+		int i = 0;
 		for (Role role : roles) {
-			update = addIndividualRole(role);
+			update = addIndividualRole(role, i);
+			i++;
 		}
 		
 		if (update)
@@ -121,28 +135,32 @@ public abstract class RoleBasedObject {
 	}
 	
 	/** 
-	 * Associates a role to this instance.
+	 * Associates given roles to this object
 	 * @param roleNames roles to be added. Role instances will be obtained through {@linkplain RoleRepository}
-	 * @throws IllegalArgumentException if any of given conditions occurs:
-	 * <ul>
-	 *		<li>roleNames.length == 0</li>
-	 *		<li>any of given roles roles is not registered in {@linkplain RoleRepository}</li>
-	 * </ul>
+	 * @throws IllegalArgumentException if roleNames.length == 0 or any of given roleNames is null/empty
 	 * @throws DuplicateException if given role was already associated to this object (either directly or as child of any associated role)
+	 * @throws RoleNotFoundException if any of given roleNames is not registered in {@linkplain RoleRepository}
 	 */
-	public void addRole(String...roleNames) throws DuplicateException, IllegalArgumentException {
+	public void addRole(String...roleNames) throws DuplicateException, IllegalArgumentException, RoleNotFoundException {
 		if (roleNames.length == 0)
 			throw new IllegalArgumentException("Empty roleNames");
 		
 		boolean update = false;
 		
+		RoleRepository roleRepo = RoleRepository.getSingletonInstance();
+		
+		int i = 0;
 		for (String roleName : roleNames) {
-			Role role = RoleRepository.getSingletonInstance().get(roleName);
+			if (roleName == null || roleName.isEmpty())
+				throw new IllegalArgumentException("Null/Empty roleName at index " + i);
+			
+			Role role = roleRepo.get(roleName);
 			
 			if (role == null)
-				throw new IllegalArgumentException("Role not found: " + roleName);
+				throw new RoleNotFoundException("Role not found: " + roleName);
 			
-			update = addIndividualRole(role);
+			update = addIndividualRole(role, -1);
+			i++;
 		}
 		
 		if (update)
@@ -151,9 +169,8 @@ public abstract class RoleBasedObject {
 	
 	/**
 	 * Removes the association of a role with this instance.
-	 * @param roles role to be removed from association set. If given role is not
-	 * associated to this instance, nothing happens.
-	 * @throws roles if roles.length == 0 or any of given roles == null
+	 * @param roles role to be removed from association set. If given role is not associated to this instance, nothing happens.
+	 * @throws IllegalArgumentException if roles.length == 0 or any of given roles is null
 	 */
 	public void removeRole(Role...roles) throws IllegalArgumentException {
 		if (roles.length == 0)
@@ -161,11 +178,13 @@ public abstract class RoleBasedObject {
 		
 		boolean update = false;
 		
+		int i = 0;
 		for (Role role : roles) {
 			if (role == null)
-				throw new IllegalArgumentException("Null role");
+				throw new IllegalArgumentException("Null role at index " + i);
 			
 			update = this.roles.remove(role);
+			i++;
 		}
 		
 		if (update)
@@ -174,23 +193,30 @@ public abstract class RoleBasedObject {
 	
 	/**
 	 * Removes the association of a role with this instance.
-	 * @param roleNames role to be removed from association set. If given role is not
-	 * associated to this instance, nothing happens. Role instances will be obtained through {@linkplain RoleRepository}
-	 * @throws roles if roles.length == 0 or any of given roles is not registered in {@linkplain RoleRepository}
+	 * @param roleNames role to be removed from association set. If given role is not associated to this instance, nothing happens. Role instances will be obtained through {@linkplain RoleRepository}
+	 * @throws IllegalArgumentException if roleNames.length == 0 or any given role is null/empty
+	 * @throws RoleNotFoundException if any given role is not registered in {@linkplain RoleRepository}
 	 */
-	public void removeRole(String...roleNames) throws IllegalArgumentException {
+	public void removeRole(String...roleNames) throws IllegalArgumentException, RoleNotFoundException {
 		if (roleNames.length == 0)
 			throw new IllegalArgumentException("Empty roleNames");
 		
 		boolean update = false;
 		
+		RoleRepository roleRepo = RoleRepository.getSingletonInstance();
+		
+		int i = 0;
 		for (String roleName : roleNames) {
-			Role role = RoleRepository.getSingletonInstance().get(roleName);
+			if (roleName == null || roleName.isEmpty())
+				throw new IllegalArgumentException("Null/Empty roleName at index " + i);
+			
+			Role role = roleRepo.get(roleName);
 			
 			if (role == null)
-				throw new IllegalArgumentException("Role not found: " + roleName);
+				throw new RoleNotFoundException(roleName);
 			
 			update = this.roles.remove(role);
+			i++;
 		}
 		
 		if (update)

@@ -22,26 +22,30 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-/** Represents an object which can contains children objects of the same type. */
+/** Represents an object which can contains children objects. */
 public class TreeObject<T extends TreeObject> implements Serializable {
-	private final Set<T> children;
+	private final Set<T> children = new HashSet<>();
 	private transient Set<T> readOnlyChildren;
 	
-	/** Constructs an empty object without children. */
-	public TreeObject() {
-		children = new HashSet<>();
-	}
+	/** Constructs an empty object without any children. */
+	public TreeObject() {}
 	
 	/** 
 	 * Constructs an object with a given set of children.
-	 * @param children default children to be added
-	 * @throws IllegalArgumentException if children == null
+	 * @param childrenSet default children to be added
+	 * @throws IllegalArgumentException if children == null or children set contains null
 	 */
-	public TreeObject(Set<T> children) throws IllegalArgumentException {
-		if (children == null)
+	public TreeObject(Set<T> childrenSet) throws IllegalArgumentException {
+		if (childrenSet == null)
 			throw new IllegalArgumentException("Null children");
 		
-		this.children = new HashSet<>(children);
+		if (childrenSet.contains(null))
+			throw new IllegalArgumentException("Children set contains null");
+		
+		
+		for (T child : childrenSet) {
+			children.add(child);
+		}
 	}
 	
 	/** Updates read-only version of children. */
@@ -49,7 +53,7 @@ public class TreeObject<T extends TreeObject> implements Serializable {
 		readOnlyChildren = Collections.unmodifiableSet(children);
 	}
 	
-	/** Returns a read-only set of children. */
+	/** @return A read-only set of children. */
 	public final Set<T> getChildren() {
 		if (readOnlyChildren == null)
 			updateReadOnlyChildren();
@@ -57,19 +61,19 @@ public class TreeObject<T extends TreeObject> implements Serializable {
 		return readOnlyChildren;
 	}
 	
-	/** Returns a boolean indicating if this object has children. */
+	/** @return A boolean indicating if this object has children. */
 	public final boolean hasChildren() {
 		return !children.isEmpty();
 	}
 	
 	/** 
-	 * Returns a boolean indicating if given objects is a child of this object.
+	 * Returns a boolean indicating if given object is a child of this object.
 	 * @param child object to be tested
 	 * @param recursive define if children of children shall be searched
 	 * @return boolean indicating if given object was added
 	 * @throws IllegalArgumentException if child == null
 	 */
-	public final boolean hasChild(T child, boolean recursive) {
+	public final boolean hasChild(T child, boolean recursive) throws IllegalArgumentException {
 		if (child == null)
 			throw new IllegalArgumentException("Null child");
 		
@@ -132,8 +136,8 @@ public class TreeObject<T extends TreeObject> implements Serializable {
 	}
 	
 	/**
-	 * Returns a boolean indicating if this objects is a (direct or indirect) child of any of the members of given set.
-	 * @param parentSet test if this instance belongs to (is a child of) any of given set members
+	 * Returns a boolean indicating if this objects is a child of any of the members of given set.
+	 * @param parentSet parents to be searched
 	 * @param recursive define if parents of parents shall be searched
 	 * @return boolean with the test result
 	 * @throws IllegalArgumentException if parentSet == null
@@ -157,19 +161,15 @@ public class TreeObject<T extends TreeObject> implements Serializable {
 	 * Adds an object as a child.
 	 * @param child child to be added
 	 * @throws DuplicateException if given child was already added as a direct child of this object.
-	 * @throws IllegalArgumentException if any of the following conditions occurs:
-	 * <ul>
-	 *		<li>child == null</li>
-	 *		<li>child.equals(this)</li>
-	 *		<li>Children (direct or indirect) of given child equals to this</li>
-	 * </ul>
+	 * @throws IllegalArgumentException if child == null
+	 * @throws CircularReferenceException if child.equals(this) or children (direct or indirect) of given child equals to this
 	 */
-	public final void addChild(T child) throws DuplicateException, IllegalArgumentException {
+	public final void addChild(T child) throws DuplicateException, IllegalArgumentException, CircularReferenceException {
 		if (child == null)
 			throw new IllegalArgumentException("Null child");
 		
 		if (child.equals(this) || child.hasChild(this, true))
-			throw new IllegalArgumentException("Cannot add itself as a child: " + child.toString());
+			throw new CircularReferenceException("Cannot add itself as a child: " + child.toString());
 		
 		if (children.contains(child))
 			throw new DuplicateException("Child already added: " + child.toString());
@@ -179,9 +179,10 @@ public class TreeObject<T extends TreeObject> implements Serializable {
 		}
 	}
 	
-	/** Removes a direct child. If given object is not a direct child, nothing happens.
+	/**
+	 * Removes a direct child. If given object is not a direct child, nothing happens.
 	 * @param child child to be removed.
-	 * @throws IllegalArgumentException  if child == null
+	 * @throws IllegalArgumentException if child == null
 	 */
 	public final void removeChild(T child) throws IllegalArgumentException {
 		if (child == null)

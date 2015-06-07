@@ -21,6 +21,6 @@ import java.util.Set;
 /** Represents a user in secured application. */
 public interface User {
 	
-	/** Returns a set of roles associated to this user. */
+	/** @return A set of roles associated to this user. */
 	public abstract Set<Role> getRoles();
 }

@@ -27,7 +27,7 @@ public abstract class AbstractAction extends RoleBasedObject {
 	
 	/** 
 	 * Constructor
-	 * Creates an action without required roles
+	 * Creates an action without any required role for its execution
 	 * @see RoleBasedObject#RoleBasedObject()
 	 */
 	public AbstractAction() {
@@ -37,13 +37,11 @@ public abstract class AbstractAction extends RoleBasedObject {
 	/**
 	 * Constructor.
 	 * Creates an action with a given set of required roles.
-	 * @param requiredRoles required roles for execution. If any of the required
-	 * roles are not satisfied during action execution an exception will be 
-	 * thrown.
+	 * @param requiredRoles required roles for execution.
 	 * @throws IllegalArgumentException if any of given roles is null
 	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).
 	 * @see RoleBasedObject#RoleBasedObject(Role...)
-	 * @see AbstractSecuredAction#run(User, Object...) 
+	 * @see AbstractAction#run(User, Object...) 
 	 */
 	public AbstractAction(Role...requiredRoles) throws IllegalArgumentException, DuplicateException {
 		super(requiredRoles);
@@ -52,20 +50,20 @@ public abstract class AbstractAction extends RoleBasedObject {
 	/**
 	 * Constructor.
 	 * Creates an action with a given set of required roles.
-	 * @param requiredRoleNames required roles for execution. If any of required roles
-	 * are not available during action execution an exception will be thrown. Instances
-	 * will be obtained through {@linkplain RoleRepository}
-	 * @throws IllegalArgumentException if any of given roles roles is not registered in {@linkplain RoleRepository}
-	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).	 * @see RoleBasedObject#RoleBasedObject(String...) 
-	 * @see AbstractSecuredAction#run(User, Object...) 
+	 * @param requiredRoles required roles for execution.
+	 * @throws IllegalArgumentException if any of given roles is null
+	 * @throws RoleNotFoundException if any of given roleNames is not registered in {@linkplain RoleRepository}
+	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).
+	 * @see RoleBasedObject#RoleBasedObject(String...) 
+	 * @see AbstractAction#run(User, Object...) 
 	 */
-	public AbstractAction(String...requiredRoleNames) throws IllegalArgumentException, DuplicateException {
+	public AbstractAction(String...requiredRoleNames) throws IllegalArgumentException, DuplicateException, RoleNotFoundException {
 		super(requiredRoleNames);
 	}
 	
 	/** 
 	 * Validates an user against action required roles.
-	 * @param user user calling the action (can be null only if there are no required roles)
+	 * @param user {@linkplain User user} calling the action (can be null only if there are no required roles)
 	 * @param params parameters passed to action
 	 * @throws SecurityException if given user does not fulfill action required roles
 	 */
@@ -87,18 +85,29 @@ public abstract class AbstractAction extends RoleBasedObject {
 		}
 	}
 	
-	/** Called before action execution (will be called only if security allowed user to proceed). Default implementation does nothing. */
+	/** 
+	 * Called before action execution. This method will be called only if security algorithm allowed action execution. Default implementation does nothing.
+	 * @param user {@linkplain User user} running this action
+	 * @param params parameters passed to action on {@linkplain AbstractAction#execute(User, Object...)}
+	 */
 	protected void preRun(User user, Object...params) {}
 
-	/** Actual action code. */
+	/**
+	 * Actual action code. Shall be implemented by subclasses
+	 * @param user {@linkplain User user} running action
+	 * @param params parameters passed to action on {@linkplain AbstractAction#execute(User, Object...)}
+	 */
 	protected abstract void run(User user, Object...params);
 
-	/** Called after run. Default implementation does nothing */
+	/** 
+	 * Called after action execution. Default implementation does nothing 
+	 * @param user {@linkplain User user} running action
+	 * @param params parameters passed to action on {@linkplain AbstractAction#execute(User, Object...)}
+	 */
 	protected void postRun(User user, Object...params) {}
 	
-	
 	/**
-	 * Returns a read-only set of required roles for this action execution.
+	 * @return A read-only set of required roles for this action execution.
 	 * This is a convenience method for {@linkplain RoleBasedObject#getRoles()}
 	 */
 	public final Set<Role> getRequiredRoles() {
@@ -108,6 +117,9 @@ public abstract class AbstractAction extends RoleBasedObject {
 	/** 
 	 * Adds required roles to this action. 
 	 * This is a convenience method for {@linkplain RoleBasedObject#addRole(Role...)}
+	 * @param roles required roles. User running this action must have all required roles in order to proceed.
+	 * @throws IllegalArgumentException if roles.length == 0 or any given role is null
+	 * @throws DuplicateException if given role was already associated to this object (either directly or as child of any associated role)
 	 */
 	public final void addRequiredRole(Role...roles) throws DuplicateException, IllegalArgumentException {
 		super.addRole(roles);
@@ -116,14 +128,20 @@ public abstract class AbstractAction extends RoleBasedObject {
 	/** 
 	 * Adds required roles to this action. 
 	 * This is a convenience method for {@linkplain RoleBasedObject#addRole(String...)}
+	 * @param roleNames roles to be added. Role instances will be obtained through {@linkplain RoleRepository}
+	 * @throws IllegalArgumentException if roleNames.length == 0 or any of given roleNames is null/empty
+	 * @throws DuplicateException if given role was already associated to this object (either directly or as child of any associated role)
+	 * @throws RoleNotFoundException if any of given roleNames is not registered in {@linkplain RoleRepository}
 	 */
-	public final void addRequiredRole(String...roleNames) throws DuplicateException, IllegalArgumentException {
+	public final void addRequiredRole(String...roleNames) throws DuplicateException, IllegalArgumentException, RoleNotFoundException {
 		super.addRole(roleNames);
 	}
 	
 	/** 
 	 * Removes a required role.
 	 * This is a convenience method for {@linkplain RoleBasedObject#removeRole(Role...)}
+	 * @param roles role to be removed from association set. If given role is not associated to this instance, nothing happens.
+	 * @throws IllegalArgumentException if roles.length == 0 or any of given roles is null
 	 */
 	public final void removeRequiredRole(Role...roles) throws IllegalArgumentException {
 		super.removeRole(roles);
@@ -132,11 +150,13 @@ public abstract class AbstractAction extends RoleBasedObject {
 	/** 
 	 * Removes a required role.
 	 * This is a convenience method for {@linkplain RoleBasedObject#removeRole(Role...)}
+	 * @param roleNames role to be removed from association set. If given role is not associated to this instance, nothing happens. Role instances will be obtained through {@linkplain RoleRepository}
+	 * @throws IllegalArgumentException if roleNames.length == 0 or any given role is null/empty
+	 * @throws RoleNotFoundException if any given role is not registered in {@linkplain RoleRepository}
 	 */
-	public final void removeRequiredRole(String...roleNames) throws IllegalArgumentException {
+	public final void removeRequiredRole(String...roleNames) throws IllegalArgumentException, RoleNotFoundException {
 		super.removeRole(roleNames);
 	}
-	
 	
 	/** 
 	 * Remove all required roles associations.
@@ -148,10 +168,9 @@ public abstract class AbstractAction extends RoleBasedObject {
 
 	/**
 	 * Execute this action.
-	 * @param user user calling this action.
-	 * If any of required roles are not satisfied, a {@linkplain SecurityException}  will be throw.
+	 * @param user user calling this action. Given user must fulfill (via see {@linkplain User#getRoles()}) all required roles (see {@linkplain AbstractAction#getRequiredRoles()}) in order to execute this action
 	 * @param params extra parameters passed to action execution.
-	 * @throws SecurityException if any of required roles are not satisfied. If action does not have required roles, is allowed to pass a null user.
+	 * @throws SecurityException If user does not fulfill required roles.
 	 */
 	public final void execute(User user, Object...params) throws SecurityException {
 		validateUser(user, params);

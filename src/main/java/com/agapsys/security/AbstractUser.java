@@ -18,6 +18,7 @@ package com.agapsys.security;
 
 /** Basic implementation of a {@linkplain User}. */
 public class AbstractUser extends RoleBasedObject implements User {
+	
 	/** 
 	 * Creates an user without any associated role.
 	 * @see RoleBasedObject#RoleBasedObject()
@@ -39,12 +40,14 @@ public class AbstractUser extends RoleBasedObject implements User {
 	
 	/**
 	 * Creates an user associated with given roles
-	 * @param roles associated roles
-	 * @throws IllegalArgumentException if any of given roles roles is not registered in {@linkplain RoleRepository}
+	 * @param roleNames associated roles
+	 * @throws IllegalArgumentException if any of given role names is null/empty
+	 * not registered in {@linkplain RoleRepository}
 	 * @throws DuplicateException if there is an attempt to register the same role more than once (either directly of as a child of any associated role).
+	 * @throws RoleNotFoundException if any given roleName is not registered in {@linkplain RoleRepository}
 	 * @see RoleBasedObject#RoleBasedObject(String...) 
 	 */
-	public AbstractUser(String...roleNames) throws IllegalArgumentException, DuplicateException {
+	public AbstractUser(String...roleNames) throws IllegalArgumentException, DuplicateException, RoleNotFoundException {
 		super(roleNames);
 	}
 }

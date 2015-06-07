@@ -53,7 +53,7 @@ public class RoleRepositoryTest {
 		roles.createRole("TEST");
 		roles.createRole("TEST");
 	}
-	
+		
 	@Test
 	public void removeRole() {
 		Role role = roles.createRole("TEST");

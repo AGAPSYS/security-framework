@@ -19,12 +19,12 @@ package com.agapsys.security.test;
 import com.agapsys.security.DuplicateException;
 import com.agapsys.security.Role;
 import com.agapsys.security.RoleBasedObject;
+import com.agapsys.security.RoleNotFoundException;
 import com.agapsys.security.RoleRepository;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class UserTest {
@@ -196,5 +196,10 @@ public class UserTest {
 		user.clearRoles();
 				
 		assertTrue(user.getRoles().isEmpty());
+	}
+	
+	@Test(expected = RoleNotFoundException.class)
+	public void testRoleNotFound() {
+		SimpleUser user = new SimpleUser("TEST_1");
 	}
 }
