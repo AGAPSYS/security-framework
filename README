@@ -1,7 +1,7 @@
-Agapsys Security Framework
+Security Framework
 ============================
 
-Welcome to the Agapsys Security Framework project.
+Welcome to the Security Framework project.
 
 Attention: If you obtained the source from a snapshot branch be aware that 
 such branch can contain unstable code or even uncompilable code.
@@ -15,7 +15,7 @@ dependencies.
 Dependencies
 ------------
 
-Agapsys Security Framework requires Java 7 compatible runtime and depends
+Security Framework requires Java 7 compatible runtime and depends
 on the following external libraries:
 
 * JUnit (TESTING)
@@ -25,7 +25,7 @@ on the following external libraries:
 Licensing
 ---------
 
-Agapsys Security Framework is licensed under the Apache License 2.0.
+Security Framework is licensed under the Apache License 2.0.
 See the files called LICENSE and NOTICE for more information.
 
 Contact
