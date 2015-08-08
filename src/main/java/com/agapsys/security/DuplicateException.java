@@ -19,7 +19,7 @@ package com.agapsys.security;
 /** Exception throw when an duplicate element was detected. */
 public class DuplicateException extends IllegalArgumentException {
 	
-	DuplicateException(String s) {
+	public DuplicateException(String s) {
 		super(s);
 	}
 }
