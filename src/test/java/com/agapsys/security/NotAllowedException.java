@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Agapsys Tecnologia Ltda-ME.
+ * Copyright 2016 Agapsys Tecnologia Ltda-ME.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.agapsys.security;
 
-import java.util.Set;
-
-/** Represents a user in secured application. */
-public interface User {
-	
-	/** @return A set of roles associated to this user. */
-	public abstract Set<Role> getRoles();
-}
+/**
+ *
+ * @author Leandro Oliveira (leandro@agapsys.com)
+ */
+public class NotAllowedException extends RuntimeException {}

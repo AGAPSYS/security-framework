@@ -17,21 +17,21 @@ limitations under the License.
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>com.agapsys.libs</groupId>
-    <artifactId>security-framework</artifactId>
-    <version>0.2.0-RC1</version>
+	<artifactId>security-framework</artifactId>
+	<version>0.2.0-RC1</version>
 	<packaging>jar</packaging>
 	
 	<properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-    </properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+	</properties>
 	
 	<name>Security Framework</name>
-    <description>Action-based security framework for java applications</description>
+	<description>Action-based security framework for java applications</description>
 	<url>https://github.com/agapsys/security-framework</url>
     
 	<licenses>
@@ -60,12 +60,17 @@ limitations under the License.
 		<url>http://www.agapsys.com</url>
 	</organization>
 	
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.20.0-GA</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
