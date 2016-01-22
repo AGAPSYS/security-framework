@@ -1,6 +1,6 @@
 <!--
 
- Copyright 2015 Agapsys Tecnologia Ltda-ME.
+ Copyright 2016 Agapsys Tecnologia Ltda-ME.
  
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ limitations under the License.
 	
 	<groupId>com.agapsys.libs</groupId>
 	<artifactId>security-framework</artifactId>
-	<version>0.2.0-RC1</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
 	<properties>
