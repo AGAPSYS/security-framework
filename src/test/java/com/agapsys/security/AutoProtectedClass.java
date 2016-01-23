@@ -22,7 +22,6 @@ package com.agapsys.security;
 public class AutoProtectedClass {
 
 	// CLASS SCOPE =============================================================
-
 	private static void println(String msg, Object... msgArgs) {
 		if (msgArgs.length > 0) {
 			msg = String.format(msg, msgArgs);
@@ -31,17 +30,17 @@ public class AutoProtectedClass {
 		System.out.println(msg);
 	}
 
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	private static void privateStaticProtected() {
 		println("privateStaticProtected()");
 	}
 
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	public static void staticProtectedWithArgs(String msg) {
 		println("staticProtectedWithArgs(%s)", msg);
 	}
 
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	public static void staticProtected() {
 		println("staticProtected()");
 	}
@@ -62,12 +61,12 @@ public class AutoProtectedClass {
 	// =========================================================================
 
 	// INSTANCE SCOPE ==========================================================
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	public void protectedWithArgs(String msg) {
 		println("protectedWithArgs(%s)", msg);
 	}
 
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	public void protectedMethod() {
 		println("protectedMethod(%s)");
 	}

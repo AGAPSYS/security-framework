@@ -23,25 +23,20 @@ import java.util.Set;
  *
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
-public class MockedSecurityManager implements com.agapsys.security.SecurityManager {
-	// CLASS SCOPE =============================================================
-	private static class NonEmptyStringSet extends LinkedHashSet<String> {
-
-		@Override
-		public boolean add(String e) {
-			if (e == null || e.trim().isEmpty())
-				throw new IllegalArgumentException("Cannot add neither null nor an empty string");
-			
-			return super.add(e);
-		}
-	}
-	// =========================================================================
-	
-	private final Set<String> availableRoles = new NonEmptyStringSet();
+public class MockedSecurityManager implements com.agapsys.security.SecurityManager {	
+	private final Set<String> availableRoles = new LinkedHashSet<>();
 	
 	public void setAvailableRoles(String...roles) {
 		availableRoles.clear();
-		availableRoles.addAll(Arrays.asList(roles));
+		
+		for (int i = 0; i < roles.length; i++) {
+			String role = roles[i];
+			if (role == null || role.trim().isEmpty())
+				throw new IllegalArgumentException("Null/Empty role at index " + i);
+			
+			if (!availableRoles.add(role))
+				throw new IllegalArgumentException("Duplicate definition of " + role);
+		}
 	}
 	
 	public void clearRoles() {
@@ -50,7 +45,7 @@ public class MockedSecurityManager implements com.agapsys.security.SecurityManag
 	
 	@Override
 	public boolean isAllowed(String[] requiredRoles) {
-		Set<String> requiredRoleSet = new NonEmptyStringSet();
+		Set<String> requiredRoleSet = new LinkedHashSet<>();
 		requiredRoleSet.addAll(Arrays.asList(requiredRoles));
 		return availableRoles.containsAll(requiredRoleSet);
 	}
@@ -59,5 +54,4 @@ public class MockedSecurityManager implements com.agapsys.security.SecurityManag
 	public void onNotAllowed() {
 		throw new NotAllowedException();
 	}
-	
 }

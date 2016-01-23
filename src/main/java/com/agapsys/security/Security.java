@@ -33,21 +33,10 @@ import javassist.CtMethod;
 public class Security {
 
 	// CLASS SCOPE =============================================================	
-	private static final String EMBEDDED_PROTECTED_CLASS_LIST_FILE = "META-INF/secured-classes.lst";
+	private static final String EMBEDDED_PROTECTED_CLASS_LIST_FILE = "META-INF/security.lst";
 	private static final String EMBEDDED_PROTECTED_CLASS_LIST_FILE_ENCODING = "utf-8";
 
 	// Core functionality ------------------------------------------------------
-	private static class NonEmptyStringSet extends LinkedHashSet<String> {
-
-		@Override
-		public boolean add(String e) {
-			if (e == null || e.trim().isEmpty())
-				throw new IllegalArgumentException("Cannot add neither null nor an empty string");
-			
-			return super.add(e);
-		}
-	}
-	
 	protected static boolean allowMultipleInitialization = false;
 	protected static boolean ignoreDuplicateRoles = false;
 	
@@ -72,11 +61,15 @@ public class Security {
 	private static Set<String> getProtectedClassNames(InputStream is, String encoding) {
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(is, encoding));
-			Set<String> nameSet = new NonEmptyStringSet();
+			Set<String> nameSet = new LinkedHashSet<>();
 			String readLine;
 
 			while ((readLine = in.readLine()) != null) {
 				readLine = readLine.trim();
+				
+				if (readLine.isEmpty())
+					continue;
+				
 				if (!nameSet.add(readLine)) {
 					throw new RuntimeException("Duplicate definition of " + readLine);
 				}
@@ -89,17 +82,14 @@ public class Security {
 	}
 
 	private static Set<String> getEmbeddedProtectedClassNames(String embeddedFileName, String encoding) {
-		Set<String> classNames = new NonEmptyStringSet();
-
 		try (InputStream is = Security.class.getClassLoader().getResourceAsStream(embeddedFileName)) {
-			if (is != null) {
-				classNames.addAll(getProtectedClassNames(is, encoding));
-			}
+			if (is != null)
+				return getProtectedClassNames(is, encoding);
+			
+			return new LinkedHashSet<>();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-
-		return classNames;
 	}
 
 	private static String toScCommaDelimited(Iterable<String>strIterable, boolean encloseInDoubleQuotes) {
@@ -209,12 +199,17 @@ public class Security {
 	}
 
 	public static void init(SecurityManager securityManager, String... protectedClassNames) {
-		Set<String> protectedClassNameSet = new NonEmptyStringSet();
+		Set<String> protectedClassNameSet = new LinkedHashSet<>();
 		
-		for (String protectedClassName : protectedClassNames) {
-			if (!protectedClassNameSet.add(protectedClassName)) {
+		for (int i = 0; i < protectedClassNames.length; i++) {
+			String protectedClassName = protectedClassNames[i];
+			
+			if (protectedClassName == null || protectedClassName.trim().isEmpty())
+				throw new IllegalArgumentException("Null/Empty class name at index " + i);
+			
+			protectedClassName = protectedClassName.trim();
+			if (!protectedClassNameSet.add(protectedClassName))
 				throw new IllegalArgumentException("Duplicate definition of " + protectedClassName);
-			}
 		}
 
 		init(securityManager, protectedClassNameSet);
