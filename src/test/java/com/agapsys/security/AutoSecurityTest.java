@@ -25,16 +25,16 @@ import org.junit.Test;
  *
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
-public class SecurityTest {
+public class AutoSecurityTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		Security.init(new MockedSecurityManager(), "com.agapsys.security.ProtectedClass");
+		Security.init(new MockedSecurityManager());
 	}
 	
 	private final MockedSecurityManager securityManager = (MockedSecurityManager) Security.getSecurityManager();
 	
-	// private ProtectedClass pc; // <-- Uncommenting this will cause javassist.CannotCompileException due to duplicate class definition
+	// private AutoAutoProtectedClass pc; // <-- Uncommenting this will cause javassist.CannotCompileException due to duplicate class definition
 	
 	@Before
 	public void before() {
@@ -48,11 +48,12 @@ public class SecurityTest {
 	
 	@Test
 	public void unprotectedTest() {
-		ProtectedClass protectedClass = new ProtectedClass();
-		protectedClass.unprotected();
-		protectedClass.unprotectedWithAnnotation();
-		ProtectedClass.staticUnprotected();
-		ProtectedClass.staticUnprotectedWithAnnotation();
+		AutoProtectedClass autoAutoProtectedClass = new AutoProtectedClass();
+		autoAutoProtectedClass.unprotected();
+		autoAutoProtectedClass.unprotectedWithAnnotation();
+		
+		AutoProtectedClass.staticUnprotected();
+		AutoProtectedClass.staticUnprotectedWithAnnotation();
 	}
 	
 	@Test
@@ -65,7 +66,7 @@ public class SecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			ProtectedClass.staticProtectedWithArgs("test");
+			AutoProtectedClass.staticProtectedWithArgs("test");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -76,7 +77,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			ProtectedClass.staticProtectedWithArgs("hello");
+			AutoProtectedClass.staticProtectedWithArgs("hello");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -88,7 +89,7 @@ public class SecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			ProtectedClass.staticProtected();
+			AutoProtectedClass.staticProtected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -99,7 +100,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			ProtectedClass.staticProtected();
+			AutoProtectedClass.staticProtected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -110,9 +111,9 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			ProtectedClass.staticUnprotectedWithAnnotation();
+			AutoProtectedClass.staticUnprotectedWithAnnotation();
 			securityManager.setAvailableRoles("test");
-			ProtectedClass.staticUnprotectedWithAnnotation();
+			AutoProtectedClass.staticUnprotectedWithAnnotation();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -123,9 +124,9 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			ProtectedClass.staticUnprotected();
+			AutoProtectedClass.staticUnprotected();
 			securityManager.setAvailableRoles("test");
-			ProtectedClass.staticUnprotected();
+			AutoProtectedClass.staticUnprotected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -137,7 +138,7 @@ public class SecurityTest {
 
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			ProtectedClass.staticChainProtected();
+			AutoProtectedClass.staticChainProtected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -148,7 +149,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			ProtectedClass.staticChainProtected();
+			AutoProtectedClass.staticChainProtected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -159,7 +160,7 @@ public class SecurityTest {
 	@Test
 	public void instanceMethods() {
 		NotAllowedException error;
-		ProtectedClass protectedClass = new ProtectedClass();
+		AutoProtectedClass autoProtectedClass = new AutoProtectedClass();
 		
 		// staticProtectedWithArgs OK ------------------------------------
 		error = null;
@@ -167,7 +168,7 @@ public class SecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			protectedClass.protectedWithArgs("test");
+			autoProtectedClass.protectedWithArgs("test");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -178,7 +179,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			protectedClass.protectedWithArgs("hello");
+			autoProtectedClass.protectedWithArgs("hello");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -190,7 +191,7 @@ public class SecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			protectedClass.protectedMethod();
+			autoProtectedClass.protectedMethod();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -201,7 +202,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			protectedClass.protectedMethod();
+			autoProtectedClass.protectedMethod();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -212,9 +213,9 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			protectedClass.unprotectedWithAnnotation();
+			autoProtectedClass.unprotectedWithAnnotation();
 			securityManager.setAvailableRoles("test");
-			protectedClass.unprotectedWithAnnotation();
+			autoProtectedClass.unprotectedWithAnnotation();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -225,9 +226,9 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			protectedClass.unprotected();
+			autoProtectedClass.unprotected();
 			securityManager.setAvailableRoles("test");
-			protectedClass.unprotected();
+			autoProtectedClass.unprotected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -239,7 +240,7 @@ public class SecurityTest {
 
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			protectedClass.chainProtected();
+			autoProtectedClass.chainProtected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -250,7 +251,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			protectedClass.chainProtected();
+			autoProtectedClass.chainProtected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}

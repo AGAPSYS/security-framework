@@ -19,7 +19,7 @@ package com.agapsys.security;
  *
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
-public class ProtectedClass {
+public class AutoProtectedClass {
 
 	// CLASS SCOPE =============================================================
 
