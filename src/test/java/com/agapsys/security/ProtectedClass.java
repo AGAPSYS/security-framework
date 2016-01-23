@@ -19,6 +19,7 @@ package com.agapsys.security;
  *
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
+@Secured("CLASS_ROLE")
 public class ProtectedClass {
 
 	// CLASS SCOPE =============================================================
@@ -31,17 +32,17 @@ public class ProtectedClass {
 		System.out.println(msg);
 	}
 
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	private static void privateStaticProtected() {
 		println("privateStaticProtected()");
 	}
 
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	public static void staticProtectedWithArgs(String msg) {
 		println("staticProtectedWithArgs(%s)", msg);
 	}
 
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	public static void staticProtected() {
 		println("staticProtected()");
 	}
@@ -62,12 +63,12 @@ public class ProtectedClass {
 	// =========================================================================
 
 	// INSTANCE SCOPE ==========================================================
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	public void protectedWithArgs(String msg) {
 		println("protectedWithArgs(%s)", msg);
 	}
 
-	@Secured({"ROLE"})
+	@Secured("ROLE")
 	public void protectedMethod() {
 		println("protectedMethod(%s)");
 	}

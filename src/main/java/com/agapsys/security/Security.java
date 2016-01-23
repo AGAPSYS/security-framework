@@ -49,6 +49,7 @@ public class Security {
 	}
 	
 	protected static boolean allowMultipleInitialization = false;
+	protected static boolean ignoreDuplicateRoles = false;
 	
 	private static void init(SecurityManager securityManager, Set<String> protectedClassNames) {
 		if (allowMultipleInitialization || !isRunning()) {
@@ -101,16 +102,23 @@ public class Security {
 		return classNames;
 	}
 
-	private static String toScCommaDelimited(String...strArray) {
+	private static String toScCommaDelimited(Iterable<String>strIterable, boolean encloseInDoubleQuotes) {
 		StringBuilder sb = new StringBuilder();
 
 		boolean first = true;
-		for (String str : strArray) {
+		for (String str : strIterable) {
 			if (!first) {
 				sb.append(", ");
 			}
 			
-			sb.append("\"").append(str).append("\"");
+			if (encloseInDoubleQuotes)
+				sb.append("\"");
+			
+			sb.append(str);
+			
+			if (encloseInDoubleQuotes)
+				sb.append("\"");
+			
 			first = false;
 		}
 
@@ -119,13 +127,32 @@ public class Security {
 
 	private static void protectClass(ClassPool cp, String className) {
 		try {
+			
 			CtClass cc = cp.get(className);
 			CtMethod methods[] = cc.getDeclaredMethods();
+			Secured classSecured = (Secured) cc.getAnnotation(Secured.class);
 
 			for (CtMethod method : methods) {
-				Secured secured = (Secured) method.getAnnotation(Secured.class);
-				if (secured != null && secured.value().length > 0) {
-					String scVarRoles = String.format("String[] roles = {%s}", toScCommaDelimited(secured.value()));
+				Secured methodSecured = (Secured) method.getAnnotation(Secured.class);
+				
+				if (classSecured != null || methodSecured != null) {
+					Set<String> roles = new LinkedHashSet<>();
+										
+					if (classSecured != null) {
+						for (String role : classSecured.value()) {
+							if (!roles.add(role) && !ignoreDuplicateRoles)
+								throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, cc.getName()));
+						}
+					}
+					
+					if (methodSecured != null) {
+						for (String role : methodSecured.value()) {
+							if (!roles.add(role) && !ignoreDuplicateRoles)
+								throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, method.getLongName()));
+						}
+					}
+					
+					String scVarRoles = roles.isEmpty() ? "String[] roles = new String[0]" : String.format("String[] roles = {%s}", toScCommaDelimited(roles, true));
 					String scVarSecurityManager = "com.agapsys.security.SecurityManager sm = com.agapsys.security.Security.getSecurityManager()";
 					String sc = String.format("{ %s; %s; if (!sm.isAllowed(roles)) { sm.onNotAllowed(); return; } }", scVarRoles, scVarSecurityManager);
 					method.insertBefore(sc);

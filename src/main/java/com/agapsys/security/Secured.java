@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface Secured {
 	/** @return required roles for method execution. */
 	String[] value()    default {};
