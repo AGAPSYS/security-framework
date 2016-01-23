@@ -33,22 +33,22 @@ import javassist.CtMethod;
 public class Security {
 
 	// CLASS SCOPE =============================================================	
-	private static final String EMBEDDED_PROTECTED_CLASS_LIST_FILE = "META-INF/security.lst";
+	private static final String EMBEDDED_PROTECTED_CLASS_LIST_FILE = "META-INF/security.info";
 	private static final String EMBEDDED_PROTECTED_CLASS_LIST_FILE_ENCODING = "utf-8";
 
 	// Core functionality ------------------------------------------------------
 	protected static boolean allowMultipleInitialization = false;
 	protected static boolean ignoreDuplicateRoles = false;
 	
-	private static void init(SecurityManager securityManager, Set<String> protectedClassNames) {
+	private static void init(SecurityManager securityManager, Set<String> securedClasses) {
 		if (allowMultipleInitialization || !isRunning()) {
 			Security.securityManager = securityManager;
 
 			if (securityManager != null) {
 				ClassPool cp = ClassPool.getDefault();
 
-				for (String protectedClassName : protectedClassNames) {
-					protectClass(cp, protectedClassName);
+				for (String securedClass : securedClasses) {
+					secure(cp, securedClass);
 				}
 			}
 
@@ -58,10 +58,10 @@ public class Security {
 		}
 	}
 
-	private static Set<String> getProtectedClassNames(InputStream is, String encoding) {
+	private static Set<String> readSecurityInfo(InputStream is, String encoding) {
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(is, encoding));
-			Set<String> nameSet = new LinkedHashSet<>();
+			Set<String> classes = new LinkedHashSet<>();
 			String readLine;
 
 			while ((readLine = in.readLine()) != null) {
@@ -70,21 +70,21 @@ public class Security {
 				if (readLine.isEmpty())
 					continue;
 				
-				if (!nameSet.add(readLine)) {
+				if (!classes.add(readLine)) {
 					throw new RuntimeException("Duplicate definition of " + readLine);
 				}
 			}
 
-			return nameSet;
+			return classes;
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	private static Set<String> getEmbeddedProtectedClassNames(String embeddedFileName, String encoding) {
+	private static Set<String> readSecurityInfo(String embeddedFileName, String encoding) {
 		try (InputStream is = Security.class.getClassLoader().getResourceAsStream(embeddedFileName)) {
 			if (is != null)
-				return getProtectedClassNames(is, encoding);
+				return readSecurityInfo(is, encoding);
 			
 			return new LinkedHashSet<>();
 		} catch (IOException ex) {
@@ -115,7 +115,7 @@ public class Security {
 		return sb.toString();
 	}
 
-	private static void protectClass(ClassPool cp, String className) {
+	private static void secure(ClassPool cp, String className) {
 		try {
 			
 			CtClass cc = cp.get(className);
@@ -195,14 +195,14 @@ public class Security {
 	 * @throws IllegalStateException if framework is already running.
 	 */
 	public static void init(SecurityManager securityManager) throws IllegalStateException {
-		init(securityManager, getEmbeddedProtectedClassNames(EMBEDDED_PROTECTED_CLASS_LIST_FILE, EMBEDDED_PROTECTED_CLASS_LIST_FILE_ENCODING));
+		init(securityManager, readSecurityInfo(EMBEDDED_PROTECTED_CLASS_LIST_FILE, EMBEDDED_PROTECTED_CLASS_LIST_FILE_ENCODING));
 	}
 
-	public static void init(SecurityManager securityManager, String... protectedClassNames) {
+	public static void init(SecurityManager securityManager, String... securedClasses) {
 		Set<String> protectedClassNameSet = new LinkedHashSet<>();
 		
-		for (int i = 0; i < protectedClassNames.length; i++) {
-			String protectedClassName = protectedClassNames[i];
+		for (int i = 0; i < securedClasses.length; i++) {
+			String protectedClassName = securedClasses[i];
 			
 			if (protectedClassName == null || protectedClassName.trim().isEmpty())
 				throw new IllegalArgumentException("Null/Empty class name at index " + i);
@@ -214,8 +214,8 @@ public class Security {
 
 		init(securityManager, protectedClassNameSet);
 	}
-
 	// =========================================================================
+	
 	// INSTANCE SCOPE ==========================================================
 	protected Security() {
 	}

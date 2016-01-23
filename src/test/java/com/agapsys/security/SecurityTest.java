@@ -30,7 +30,7 @@ public class SecurityTest {
 	@BeforeClass
 	public static void beforeClass() {
 		MockedSecurity.allowMultipleInitialization();
-		MockedSecurity.init(new MockedSecurityManager(), "com.agapsys.security.ProtectedClass");
+		MockedSecurity.init(new MockedSecurityManager(), "com.agapsys.security.SecuredClass");
 	}
 	
 	private final MockedSecurityManager securityManager = (MockedSecurityManager) Security.getSecurityManager();
@@ -51,11 +51,11 @@ public class SecurityTest {
 	public void unprotectedTest() {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
-		ProtectedClass protectedClass = new ProtectedClass();
-		protectedClass.unprotected();
-		protectedClass.unprotectedWithAnnotation();
-		ProtectedClass.staticUnprotected();
-		ProtectedClass.staticUnprotectedWithAnnotation();
+		SecuredClass protectedClass = new SecuredClass();
+		protectedClass.unsecured();
+		protectedClass.unsecuredWithAnnotation();
+		SecuredClass.staticUnsecured();
+		SecuredClass.staticUnsecuredWithAnnotation();
 	}
 	
 	@Test
@@ -67,7 +67,7 @@ public class SecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("CLASS_ROLE", "ROLE");
-			ProtectedClass.staticProtectedWithArgs("test");
+			SecuredClass.staticSecuredWithArgs("test");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -78,7 +78,7 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			ProtectedClass.staticProtectedWithArgs("hello");
+			SecuredClass.staticSecuredWithArgs("hello");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -89,7 +89,7 @@ public class SecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("CLASS_ROLE", "ROLE");
-			ProtectedClass.staticProtected();
+			SecuredClass.staticSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -100,7 +100,7 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			ProtectedClass.staticProtected();
+			SecuredClass.staticSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -111,9 +111,9 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			ProtectedClass.staticUnprotectedWithAnnotation();
+			SecuredClass.staticUnsecuredWithAnnotation();
 			securityManager.setAvailableRoles("CLASS_ROLE", "test");
-			ProtectedClass.staticUnprotectedWithAnnotation();
+			SecuredClass.staticUnsecuredWithAnnotation();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -124,7 +124,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			ProtectedClass.staticUnprotectedWithAnnotation();
+			SecuredClass.staticUnsecuredWithAnnotation();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -135,9 +135,9 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 		
 		try {
-			ProtectedClass.staticUnprotected();
+			SecuredClass.staticUnsecured();
 			securityManager.setAvailableRoles("CLASS_ROLE", "test");
-			ProtectedClass.staticUnprotected();
+			SecuredClass.staticUnsecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -148,7 +148,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 		
 		try {
-			ProtectedClass.staticUnprotected();
+			SecuredClass.staticUnsecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -160,7 +160,7 @@ public class SecurityTest {
 
 		try {
 			securityManager.setAvailableRoles("CLASS_ROLE", "ROLE");
-			ProtectedClass.staticChainProtected();
+			SecuredClass.staticChainSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -171,7 +171,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			ProtectedClass.staticChainProtected();
+			SecuredClass.staticChainSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -182,14 +182,14 @@ public class SecurityTest {
 	@Test
 	public void instanceMethods() {
 		NotAllowedException error;
-		ProtectedClass protectedClass = new ProtectedClass();
+		SecuredClass protectedClass = new SecuredClass();
 		
 		// staticProtectedWithArgs OK ------------------------------------
 		error = null;
 		
 		try {
 			securityManager.setAvailableRoles("CLASS_ROLE", "ROLE");
-			protectedClass.protectedWithArgs("test");
+			protectedClass.securedWithArgs("test");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -200,7 +200,7 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			protectedClass.protectedWithArgs("hello");
+			protectedClass.securedWithArgs("hello");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -211,7 +211,7 @@ public class SecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("CLASS_ROLE", "ROLE");
-			protectedClass.protectedMethod();
+			protectedClass.secured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -222,7 +222,7 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			protectedClass.protectedMethod();
+			protectedClass.secured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -233,7 +233,7 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			protectedClass.unprotectedWithAnnotation();
+			protectedClass.unsecuredWithAnnotation();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -248,7 +248,7 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			protectedClass.unprotectedWithAnnotation();
+			protectedClass.unsecuredWithAnnotation();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -259,7 +259,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			protectedClass.unprotected();
+			protectedClass.unsecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}

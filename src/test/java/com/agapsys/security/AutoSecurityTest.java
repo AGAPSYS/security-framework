@@ -49,12 +49,12 @@ public class AutoSecurityTest {
 	
 	@Test
 	public void unprotectedTest() {
-		AutoProtectedClass autoAutoProtectedClass = new AutoProtectedClass();
-		autoAutoProtectedClass.unprotected();
-		autoAutoProtectedClass.unprotectedWithAnnotation();
+		AutoSecuredClass autoAutoProtectedClass = new AutoSecuredClass();
+		autoAutoProtectedClass.unsecured();
+		autoAutoProtectedClass.unsecuredWithAnnotation();
 		
-		AutoProtectedClass.staticUnprotected();
-		AutoProtectedClass.staticUnprotectedWithAnnotation();
+		AutoSecuredClass.staticUnsecured();
+		AutoSecuredClass.staticUnsecuredWithAnnotation();
 	}
 	
 	@Test
@@ -67,7 +67,7 @@ public class AutoSecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			AutoProtectedClass.staticProtectedWithArgs("test");
+			AutoSecuredClass.staticSecuredWithArgs("test");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -78,7 +78,7 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			AutoProtectedClass.staticProtectedWithArgs("hello");
+			AutoSecuredClass.staticSecuredWithArgs("hello");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -90,7 +90,7 @@ public class AutoSecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			AutoProtectedClass.staticProtected();
+			AutoSecuredClass.staticSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -101,7 +101,7 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			AutoProtectedClass.staticProtected();
+			AutoSecuredClass.staticSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -112,9 +112,9 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			AutoProtectedClass.staticUnprotectedWithAnnotation();
+			AutoSecuredClass.staticUnsecuredWithAnnotation();
 			securityManager.setAvailableRoles("test");
-			AutoProtectedClass.staticUnprotectedWithAnnotation();
+			AutoSecuredClass.staticUnsecuredWithAnnotation();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -125,9 +125,9 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			AutoProtectedClass.staticUnprotected();
+			AutoSecuredClass.staticUnsecured();
 			securityManager.setAvailableRoles("test");
-			AutoProtectedClass.staticUnprotected();
+			AutoSecuredClass.staticUnsecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -139,7 +139,7 @@ public class AutoSecurityTest {
 
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			AutoProtectedClass.staticChainProtected();
+			AutoSecuredClass.staticChainProtected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -150,7 +150,7 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			AutoProtectedClass.staticChainProtected();
+			AutoSecuredClass.staticChainProtected();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -161,7 +161,7 @@ public class AutoSecurityTest {
 	@Test
 	public void instanceMethods() {
 		NotAllowedException error;
-		AutoProtectedClass autoProtectedClass = new AutoProtectedClass();
+		AutoSecuredClass autoProtectedClass = new AutoSecuredClass();
 		
 		// staticProtectedWithArgs OK ------------------------------------
 		error = null;
@@ -169,7 +169,7 @@ public class AutoSecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			autoProtectedClass.protectedWithArgs("test");
+			autoProtectedClass.securedWithArgs("test");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -180,7 +180,7 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			autoProtectedClass.protectedWithArgs("hello");
+			autoProtectedClass.securedWithArgs("hello");
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -192,7 +192,7 @@ public class AutoSecurityTest {
 		
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			autoProtectedClass.protectedMethod();
+			autoProtectedClass.secured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -203,7 +203,7 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			autoProtectedClass.protectedMethod();
+			autoProtectedClass.secured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -214,9 +214,9 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			autoProtectedClass.unprotectedWithAnnotation();
+			autoProtectedClass.unsecuredWithAnnotation();
 			securityManager.setAvailableRoles("test");
-			autoProtectedClass.unprotectedWithAnnotation();
+			autoProtectedClass.unsecuredWithAnnotation();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -227,9 +227,9 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			autoProtectedClass.unprotected();
+			autoProtectedClass.unsecured();
 			securityManager.setAvailableRoles("test");
-			autoProtectedClass.unprotected();
+			autoProtectedClass.unsecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -241,7 +241,7 @@ public class AutoSecurityTest {
 
 		try {
 			securityManager.setAvailableRoles("ROLE");
-			autoProtectedClass.chainProtected();
+			autoProtectedClass.chainSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -252,7 +252,7 @@ public class AutoSecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			autoProtectedClass.chainProtected();
+			autoProtectedClass.chainSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}

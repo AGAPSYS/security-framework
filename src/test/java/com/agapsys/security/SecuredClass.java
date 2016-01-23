@@ -19,9 +19,11 @@ package com.agapsys.security;
  *
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
-public class AutoProtectedClass {
+@Secured("CLASS_ROLE")
+public class SecuredClass {
 
 	// CLASS SCOPE =============================================================
+
 	private static void println(String msg, Object... msgArgs) {
 		if (msgArgs.length > 0) {
 			msg = String.format(msg, msgArgs);
@@ -31,57 +33,57 @@ public class AutoProtectedClass {
 	}
 
 	@Secured("ROLE")
-	private static void privateStaticProtected() {
-		println("privateStaticProtected()");
+	private static void privateStaticSecured() {
+		println("privateStaticSecured()");
 	}
 
 	@Secured("ROLE")
-	public static void staticProtectedWithArgs(String msg) {
-		println("staticProtectedWithArgs(%s)", msg);
+	public static void staticSecuredWithArgs(String msg) {
+		println("staticSecuredWithArgs(%s)", msg);
 	}
 
 	@Secured("ROLE")
-	public static void staticProtected() {
-		println("staticProtected()");
+	public static void staticSecured() {
+		println("staticSecured()");
 	}
 
 	@Secured
-	public static void staticUnprotectedWithAnnotation() {
-		println("staticUnprotectedWithAnnotation()");
+	public static void staticUnsecuredWithAnnotation() {
+		println("staticUnsecuredWithAnnotation()");
 	}
 
-	public static void staticUnprotected() {
-		println("staticUnprotected()");
+	public static void staticUnsecured() {
+		println("staticUnsecured()");
 	}
 
-	public static void staticChainProtected() {
-		privateStaticProtected();
-		staticProtected();
+	public static void staticChainSecured() {
+		privateStaticSecured();
+		staticSecured();
 	}
 	// =========================================================================
 
 	// INSTANCE SCOPE ==========================================================
 	@Secured("ROLE")
-	public void protectedWithArgs(String msg) {
-		println("protectedWithArgs(%s)", msg);
+	public void securedWithArgs(String msg) {
+		println("securedWithArgs(%s)", msg);
 	}
 
 	@Secured("ROLE")
-	public void protectedMethod() {
-		println("protectedMethod(%s)");
+	public void secured() {
+		println("secured()");
 	}
 
 	@Secured
-	public void unprotectedWithAnnotation() {
-		println("unprotectedWithAnnotation");
+	public void unsecuredWithAnnotation() {
+		println("unsecuredWithAnnotation()");
 	}
 
-	public void unprotected() {
-		println("unprotected()");
+	public void unsecured() {
+		println("unsecured()");
 	}
 
 	public void chainProtected() {
-		protectedMethod();
+		secured();
 	}
 	// =========================================================================
 }
