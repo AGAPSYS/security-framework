@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Agapsys Tecnologia Ltda-ME.
+ * Copyright 2016 Agapsys Tecnologia Ltda-ME.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.agapsys.security;
 
-public class CircularReferenceException extends RuntimeException {
-
-	CircularReferenceException(String message) {
-		super(message);
-	}
+public interface SecurityManager {
+	/** 
+	 * Checks if execution is allowed for given roles
+	 * @param requiredRoles required roles for execution
+	 * @return a boolean indicating if execution is allowed.
+	 */
+	public boolean isAllowed(String[] requiredRoles);
+	
+	/** Called if an execution is not allowed. */
+	public void onNotAllowed();
 }
