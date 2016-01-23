@@ -29,7 +29,8 @@ public class SecurityTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		Security.init(new MockedSecurityManager(), "com.agapsys.security.ProtectedClass");
+		MockedSecurity.allowMultipleInitialization();
+		MockedSecurity.init(new MockedSecurityManager(), "com.agapsys.security.ProtectedClass");
 	}
 	
 	private final MockedSecurityManager securityManager = (MockedSecurityManager) Security.getSecurityManager();

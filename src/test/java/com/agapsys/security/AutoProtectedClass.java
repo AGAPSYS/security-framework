@@ -31,17 +31,17 @@ public class AutoProtectedClass {
 		System.out.println(msg);
 	}
 
-	@Secured(requiredRoles = {"ROLE"})
+	@Secured({"ROLE"})
 	private static void privateStaticProtected() {
 		println("privateStaticProtected()");
 	}
 
-	@Secured(requiredRoles = {"ROLE"})
+	@Secured({"ROLE"})
 	public static void staticProtectedWithArgs(String msg) {
 		println("staticProtectedWithArgs(%s)", msg);
 	}
 
-	@Secured(requiredRoles = {"ROLE"})
+	@Secured({"ROLE"})
 	public static void staticProtected() {
 		println("staticProtected()");
 	}
@@ -62,12 +62,12 @@ public class AutoProtectedClass {
 	// =========================================================================
 
 	// INSTANCE SCOPE ==========================================================
-	@Secured(requiredRoles = {"ROLE"})
+	@Secured({"ROLE"})
 	public void protectedWithArgs(String msg) {
 		println("protectedWithArgs(%s)", msg);
 	}
 
-	@Secured(requiredRoles = {"ROLE"})
+	@Secured({"ROLE"})
 	public void protectedMethod() {
 		println("protectedMethod(%s)");
 	}

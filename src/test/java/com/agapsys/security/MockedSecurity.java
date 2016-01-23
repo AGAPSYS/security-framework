@@ -15,18 +15,12 @@
  */
 package com.agapsys.security;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Marks a method as secured
+ *
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Secured {
-	/** @return required roles for method execution. */
-	String[] value()    default {};
+public class MockedSecurity extends Security {
+	public static void allowMultipleInitialization() {
+		allowMultipleInitialization = true;
+	}
 }

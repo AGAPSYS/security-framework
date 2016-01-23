@@ -48,8 +48,10 @@ public class Security {
 		}
 	}
 	
+	protected static boolean allowMultipleInitialization = false;
+	
 	private static void init(SecurityManager securityManager, Set<String> protectedClassNames) {
-		if (!isRunning()) {
+		if (allowMultipleInitialization || !isRunning()) {
 			Security.securityManager = securityManager;
 
 			if (securityManager != null) {
@@ -122,8 +124,8 @@ public class Security {
 
 			for (CtMethod method : methods) {
 				Secured secured = (Secured) method.getAnnotation(Secured.class);
-				if (secured != null && secured.requiredRoles().length > 0) {
-					String scVarRoles = String.format("String[] roles = {%s}", toScCommaDelimited(secured.requiredRoles()));
+				if (secured != null && secured.value().length > 0) {
+					String scVarRoles = String.format("String[] roles = {%s}", toScCommaDelimited(secured.value()));
 					String scVarSecurityManager = "com.agapsys.security.SecurityManager sm = com.agapsys.security.Security.getSecurityManager()";
 					String sc = String.format("{ %s; %s; if (!sm.isAllowed(roles)) { sm.onNotAllowed(); return; } }", scVarRoles, scVarSecurityManager);
 					method.insertBefore(sc);
@@ -193,7 +195,7 @@ public class Security {
 
 	// =========================================================================
 	// INSTANCE SCOPE ==========================================================
-	private Security() {
+	protected Security() {
 	}
 	// =========================================================================
 }
