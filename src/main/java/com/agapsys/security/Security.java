@@ -40,7 +40,7 @@ public class Security {
 	protected static boolean allowMultipleInitialization = false;
 	protected static boolean ignoreDuplicateRoles = false;
 	
-	private static void init(SecurityManager securityManager, Set<String> securedClasses) {
+	private static void init(ClassLoader classLoader, SecurityManager securityManager, Set<String> securedClasses) {
 		if (allowMultipleInitialization || !isRunning()) {
 			Security.securityManager = securityManager;
 
@@ -48,7 +48,7 @@ public class Security {
 				ClassPool cp = ClassPool.getDefault();
 
 				for (String securedClass : securedClasses) {
-					secure(cp, securedClass);
+					secure(classLoader, cp, securedClass);
 				}
 			}
 
@@ -115,7 +115,7 @@ public class Security {
 		return sb.toString();
 	}
 
-	private static void secure(ClassPool cp, String className) {
+	private static void secure(ClassLoader classLoader, ClassPool cp, String className) {
 		try {
 			
 			CtClass cc = cp.get(className);
@@ -149,7 +149,7 @@ public class Security {
 				}
 			}
 			
-			cc.toClass();
+			cc.toClass(classLoader, Security.class.getProtectionDomain());
 		} catch (Throwable t) {
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException) t;
@@ -195,10 +195,19 @@ public class Security {
 	 * @throws IllegalStateException if framework is already running.
 	 */
 	public static void init(SecurityManager securityManager) throws IllegalStateException {
-		init(securityManager, readSecurityInfo(EMBEDDED_PROTECTED_CLASS_LIST_FILE, EMBEDDED_PROTECTED_CLASS_LIST_FILE_ENCODING));
+		init(Security.class.getClassLoader(), securityManager);
+	}
+	
+	public static void init(ClassLoader classLoader, SecurityManager securityManager) {
+		init(classLoader, securityManager, readSecurityInfo(EMBEDDED_PROTECTED_CLASS_LIST_FILE, EMBEDDED_PROTECTED_CLASS_LIST_FILE_ENCODING));
 	}
 
+	
 	public static void init(SecurityManager securityManager, String... securedClasses) {
+		init(Security.class.getClassLoader(), securityManager, securedClasses);
+	}
+	
+	public static void init(ClassLoader classLoader, SecurityManager securityManager, String... securedClasses) {
 		Set<String> protectedClassNameSet = new LinkedHashSet<>();
 		
 		for (int i = 0; i < securedClasses.length; i++) {
@@ -212,12 +221,11 @@ public class Security {
 				throw new IllegalArgumentException("Duplicate definition of " + protectedClassName);
 		}
 
-		init(securityManager, protectedClassNameSet);
+		init(classLoader, securityManager, protectedClassNameSet);
 	}
 	// =========================================================================
 	
 	// INSTANCE SCOPE ==========================================================
-	protected Security() {
-	}
+	protected Security() {}
 	// =========================================================================
 }
