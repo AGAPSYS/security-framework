@@ -23,7 +23,14 @@ package com.agapsys.security;
 public class SecuredClass {
 
 	// CLASS SCOPE =============================================================
-
+	@Secured
+	public static class InnerStaticClass {
+		@Secured("ROLE")
+		public static void staticSecured() {
+			println("staticSecured()");
+		}
+	}
+	
 	private static void println(String msg, Object... msgArgs) {
 		if (msgArgs.length > 0) {
 			msg = String.format(msg, msgArgs);
@@ -63,6 +70,13 @@ public class SecuredClass {
 	// =========================================================================
 
 	// INSTANCE SCOPE ==========================================================
+	class InnerClass {
+		@Secured("ROLE")
+		public void secured() {
+			println("secured()");
+		}
+	}
+	
 	@Secured("ROLE")
 	public void securedWithArgs(String msg) {
 		println("securedWithArgs(%s)", msg);

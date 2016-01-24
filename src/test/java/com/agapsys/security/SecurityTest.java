@@ -15,6 +15,7 @@
  */
 package com.agapsys.security;
 
+import com.agapsys.security.SecuredClass.InnerClass;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,7 +31,11 @@ public class SecurityTest {
 	@BeforeClass
 	public static void beforeClass() {
 		MockedSecurity.allowMultipleInitialization();
-		MockedSecurity.init(new MockedSecurityManager(), "com.agapsys.security.SecuredClass");
+		MockedSecurity.init(new MockedSecurityManager(),
+			"com.agapsys.security.SecuredClass",
+			"com.agapsys.security.SecuredClass$InnerStaticClass",
+			"com.agapsys.security.SecuredClass$InnerClass"
+		);
 	}
 	
 	private final MockedSecurityManager securityManager = (MockedSecurityManager) Security.getSecurityManager();
@@ -285,6 +290,68 @@ public class SecurityTest {
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
+		
+		Assert.assertNotNull(error);
+	}
+	
+	@Test
+	public void innerStaticClassTest() {
+		NotAllowedException error;
+
+		// staticProtectedWithArgs OK ------------------------------------
+		error = null;
+		
+		try {
+			securityManager.setAvailableRoles("CLASS_ROLE", "ROLE"); // <-- CLASS_ROLE is required since println static method belongs to outter class (which is secured)
+			SecuredClass.InnerStaticClass.staticSecured();
+		} catch (NotAllowedException ex) {
+			error = ex;
+		}
+		
+		
+		Assert.assertNull(error);
+		// staticProtectedWithArgs REJECTED ------------------------------
+		error = null;
+		
+		try {
+			securityManager.clearRoles();
+			SecuredClass.InnerStaticClass.staticSecured();
+		} catch (NotAllowedException ex) {
+			error = ex;
+		}
+		
+		
+		Assert.assertNotNull(error);
+	}
+	
+	@Test
+	public void innerClassTest() {
+		NotAllowedException error;
+		SecuredClass securedObj = new SecuredClass();
+		InnerClass innerObj = securedObj.new InnerClass();
+		
+		// staticProtectedWithArgs OK ------------------------------------
+		error = null;
+		
+		try {
+			securityManager.setAvailableRoles("CLASS_ROLE", "ROLE"); // <-- CLASS_ROLE is required since println static method belongs to outter class (which is secured)
+			innerObj.secured();
+		} catch (NotAllowedException ex) {
+			error = ex;
+		}
+		
+		
+		Assert.assertNull(error);
+		// staticProtectedWithArgs REJECTED ------------------------------
+		error = null;
+		
+		try {
+			securityManager.clearRoles();
+			innerObj.secured();
+		} catch (NotAllowedException ex) {
+			error = ex;
+		}
+		
 		
 		Assert.assertNotNull(error);
 	}
