@@ -41,15 +41,22 @@ public class Security {
 	protected static boolean ignoreDuplicateRoles = false;
 	
 	private static void init(ClassLoader classLoader, SecurityManager securityManager, Set<String> securedClasses) {
+		if (classLoader == null)
+			throw new IllegalArgumentException("A class loader must be provided");
+		
+		if (securityManager == null)
+			throw new IllegalArgumentException("A security manager must be provided");
+		
+		if (securedClasses == null)
+			throw new IllegalArgumentException("Secured classes cannot be null");
+		
 		if (allowMultipleInitialization || !isRunning()) {
 			Security.securityManager = securityManager;
 
-			if (securityManager != null) {
-				ClassPool cp = ClassPool.getDefault();
+			ClassPool cp = ClassPool.getDefault();
 
-				for (String securedClass : securedClasses) {
-					secure(classLoader, cp, securedClass);
-				}
+			for (String securedClass : securedClasses) {
+				secure(classLoader, cp, securedClass);
 			}
 
 			started = true;
@@ -168,7 +175,7 @@ public class Security {
 	 *
 	 * @return a boolean indicating if security framework is running
 	 */
-	public static boolean isRunning() {
+	protected static boolean isRunning() {
 		return started;
 	}
 
@@ -194,20 +201,20 @@ public class Security {
 	 * <code>null</code> implies in no security.
 	 * @throws IllegalStateException if framework is already running.
 	 */
-	public static void init(SecurityManager securityManager) throws IllegalStateException {
+	protected static void init(SecurityManager securityManager) throws IllegalStateException {
 		init(Security.class.getClassLoader(), securityManager);
 	}
 	
-	public static void init(ClassLoader classLoader, SecurityManager securityManager) {
+	protected static void init(ClassLoader classLoader, SecurityManager securityManager) {
 		init(classLoader, securityManager, readSecurityInfo(EMBEDDED_PROTECTED_CLASS_LIST_FILE, EMBEDDED_PROTECTED_CLASS_LIST_FILE_ENCODING));
 	}
 
 	
-	public static void init(SecurityManager securityManager, String... securedClasses) {
+	protected static void init(SecurityManager securityManager, String... securedClasses) {
 		init(Security.class.getClassLoader(), securityManager, securedClasses);
 	}
 	
-	public static void init(ClassLoader classLoader, SecurityManager securityManager, String... securedClasses) {
+	protected static void init(ClassLoader classLoader, SecurityManager securityManager, String... securedClasses) {
 		Set<String> protectedClassNameSet = new LinkedHashSet<>();
 		
 		for (int i = 0; i < securedClasses.length; i++) {
