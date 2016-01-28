@@ -175,7 +175,7 @@ public class Security {
 	 *
 	 * @return a boolean indicating if security framework is running
 	 */
-	protected static boolean isRunning() {
+	public static boolean isRunning() {
 		return started;
 	}
 
