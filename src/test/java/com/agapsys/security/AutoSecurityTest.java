@@ -29,7 +29,6 @@ public class AutoSecurityTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		MockedSecurity.allowMultipleInitialization();
 		MockedSecurity.init(new MockedSecurityManager());
 	}
 	

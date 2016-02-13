@@ -20,7 +20,11 @@ package com.agapsys.security;
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
 public class MockedSecurity extends Security {
-	public static void allowMultipleInitialization() {
-		allowMultipleInitialization = true;
+	public static void init(SecurityManager securityManager) throws IllegalStateException {
+		Security.init(securityManager);
+	}
+	
+	public static void init(SecurityManager securityManager, String... securedClasses) {
+		Security.init(securityManager, securedClasses);
 	}
 }

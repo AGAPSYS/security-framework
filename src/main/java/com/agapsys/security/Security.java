@@ -27,7 +27,6 @@ import javassist.CtMethod;
 
 /**
  * Class responsible by security preventing unexpected method executions
- *
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
 public class Security {
@@ -37,9 +36,6 @@ public class Security {
 	private static final String EMBEDDED_PROTECTED_CLASS_LIST_FILE_ENCODING = "utf-8";
 
 	// Core functionality ------------------------------------------------------
-	protected static boolean allowMultipleInitialization = false;
-	protected static boolean ignoreDuplicateRoles = false;
-	
 	private static void init(ClassLoader classLoader, SecurityManager securityManager, Set<String> securedClasses) {
 		if (classLoader == null)
 			throw new IllegalArgumentException("A class loader must be provided");
@@ -50,18 +46,12 @@ public class Security {
 		if (securedClasses == null)
 			throw new IllegalArgumentException("Secured classes cannot be null");
 		
-		if (allowMultipleInitialization || !isRunning()) {
-			Security.securityManager = securityManager;
+		Security.securityManager = securityManager;
 
-			ClassPool cp = ClassPool.getDefault();
+		ClassPool cp = ClassPool.getDefault();
 
-			for (String securedClass : securedClasses) {
-				secure(classLoader, cp, securedClass);
-			}
-
-			started = true;
-		} else {
-			throw new IllegalStateException("Framework is already running");
+		for (String securedClass : securedClasses) {
+			secure(classLoader, cp, securedClass);
 		}
 	}
 
@@ -137,14 +127,14 @@ public class Security {
 										
 					if (classSecured != null) {
 						for (String role : classSecured.value()) {
-							if (!roles.add(role) && !ignoreDuplicateRoles)
+							if (!roles.add(role))
 								throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, cc.getName()));
 						}
 					}
 					
 					if (methodSecured != null) {
 						for (String role : methodSecured.value()) {
-							if (!roles.add(role) && !ignoreDuplicateRoles)
+							if (!roles.add(role))
 								throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, method.getLongName()));
 						}
 					}
@@ -167,17 +157,7 @@ public class Security {
 	}
 	// -------------------------------------------------------------------------
 
-	private static boolean started = false;
 	private static SecurityManager securityManager = null;
-
-	/**
-	 * Returns a boolean indicating if security framework is running
-	 *
-	 * @return a boolean indicating if security framework is running
-	 */
-	public static boolean isRunning() {
-		return started;
-	}
 
 	/**
 	 * Returns the {@linkplain SecurityManager} instance used by framework.
@@ -187,10 +167,6 @@ public class Security {
 	 * {@linkplain Security#isRunning()})
 	 */
 	public static SecurityManager getSecurityManager() throws IllegalStateException {
-		if (!isRunning()) {
-			throw new IllegalStateException("Security is not running");
-		}
-
 		return securityManager;
 	}
 
@@ -201,7 +177,7 @@ public class Security {
 	 * <code>null</code> implies in no security.
 	 * @throws IllegalStateException if framework is already running.
 	 */
-	protected static void init(SecurityManager securityManager) throws IllegalStateException {
+	protected static void init(SecurityManager securityManager) {
 		init(Security.class.getClassLoader(), securityManager);
 	}
 	
@@ -209,7 +185,6 @@ public class Security {
 		init(classLoader, securityManager, readSecurityInfo(EMBEDDED_PROTECTED_CLASS_LIST_FILE, EMBEDDED_PROTECTED_CLASS_LIST_FILE_ENCODING));
 	}
 
-	
 	protected static void init(SecurityManager securityManager, String... securedClasses) {
 		init(Security.class.getClassLoader(), securityManager, securedClasses);
 	}
