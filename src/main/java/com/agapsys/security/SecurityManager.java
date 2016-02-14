@@ -27,7 +27,7 @@ public abstract class SecurityManager {
 	 * Called if an execution is not allowed.
 	 * @throws NotAllowedException if an execution is not allowed.
 	 */
-	protected void onNotAllowed() throws NotAllowedException {
+	public void onNotAllowed() throws NotAllowedException {
 		throw new NotAllowedException();
 	}
 }
