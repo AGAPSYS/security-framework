@@ -112,41 +112,73 @@ public class Security {
 		return sb.toString();
 	}
 
+	private static boolean logEnabled = false;
+	private static boolean skipFrozenClasses = false;
+	
+	/** 
+	 * Enables/Disables console logging output.
+	 * @param enable defines if log messages shall be printed to console. By default log is disabled.
+	 */
+	public static void enableLog(boolean enable) {
+		logEnabled = enable;
+	}
+	
+	/**
+	 * Defines if frozen classes shall be skipped.
+	 * @param skip define if frozen classes shall be skipped instead of rising errors. By default frozen classes are not skipped.
+	 */
+	public static void skipFrozenClasses(boolean skip) {
+		skipFrozenClasses = skip;
+	}
+	
+	private static void log(String message, Object...msgArgs) {
+		if (logEnabled) {
+			if (msgArgs.length > 0) message = String.format(message, msgArgs);
+			System.out.println(message);
+		}
+	}
+	
 	private static void secure(ClassLoader classLoader, ClassPool cp, String className) {
 		try {
 			
 			CtClass cc = cp.get(className);
-			CtMethod methods[] = cc.getDeclaredMethods();
-			Secured classSecured = (Secured) cc.getAnnotation(Secured.class);
-
-			for (CtMethod method : methods) {
-				Secured methodSecured = (Secured) method.getAnnotation(Secured.class);
-				
-				if (classSecured != null || methodSecured != null) {
-					Set<String> roles = new LinkedHashSet<>();
-										
-					if (classSecured != null) {
-						for (String role : classSecured.value()) {
-							if (!roles.add(role))
-								throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, cc.getName()));
-						}
-					}
-					
-					if (methodSecured != null) {
-						for (String role : methodSecured.value()) {
-							if (!roles.add(role))
-								throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, method.getLongName()));
-						}
-					}
-					
-					String scVarRoles = roles.isEmpty() ? "String[] roles = new String[0]" : String.format("String[] roles = {%s}", toScCommaDelimited(roles, true));
-					String scVarSecurityManager = "com.agapsys.security.SecurityManager sm = com.agapsys.security.Security.getSecurityManager()";
-					String sc = String.format("{ %s; %s; if (!sm.isAllowed(roles)) { sm.onNotAllowed(); return; } }", scVarRoles, scVarSecurityManager);
-					method.insertBefore(sc);
-				}
-			}
 			
-			cc.toClass(classLoader, Security.class.getProtectionDomain());
+			if (!skipFrozenClasses || !cc.isFrozen()) {
+				CtMethod methods[] = cc.getDeclaredMethods();
+				Secured classSecured = (Secured) cc.getAnnotation(Secured.class);
+
+				for (CtMethod method : methods) {
+					Secured methodSecured = (Secured) method.getAnnotation(Secured.class);
+
+					if (classSecured != null || methodSecured != null) {
+						Set<String> roles = new LinkedHashSet<>();
+
+						if (classSecured != null) {
+							for (String role : classSecured.value()) {
+								if (!roles.add(role))
+									throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, cc.getName()));
+							}
+						}
+
+						if (methodSecured != null) {
+							for (String role : methodSecured.value()) {
+								if (!roles.add(role))
+									throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, method.getLongName()));
+							}
+						}
+
+						String scVarRoles = roles.isEmpty() ? "String[] roles = new String[0]" : String.format("String[] roles = {%s}", toScCommaDelimited(roles, true));
+						String scVarSecurityManager = "com.agapsys.security.SecurityManager sm = com.agapsys.security.Security.getSecurityManager()";
+						String sc = String.format("{ %s; %s; if (!sm.isAllowed(roles)) { sm.onNotAllowed(); } }", scVarRoles, scVarSecurityManager);
+						method.insertBefore(sc);
+					}
+				}
+			
+				cc.toClass(classLoader, Security.class.getProtectionDomain());
+				log("Secured class: %s", className);
+			} else {
+				log("Class already secured: %s", className);
+			}
 		} catch (Throwable t) {
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException) t;
