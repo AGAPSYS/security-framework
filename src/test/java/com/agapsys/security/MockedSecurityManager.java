@@ -23,7 +23,7 @@ import java.util.Set;
  *
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
-public class MockedSecurityManager implements com.agapsys.security.SecurityManager {	
+public class MockedSecurityManager extends com.agapsys.security.SecurityManager {	
 	private final Set<String> availableRoles = new LinkedHashSet<>();
 	
 	public void setAvailableRoles(String...roles) {
@@ -48,10 +48,5 @@ public class MockedSecurityManager implements com.agapsys.security.SecurityManag
 		Set<String> requiredRoleSet = new LinkedHashSet<>();
 		requiredRoleSet.addAll(Arrays.asList(requiredRoles));
 		return availableRoles.containsAll(requiredRoleSet);
-	}
-
-	@Override
-	public void onNotAllowed() {
-		throw new NotAllowedException();
 	}
 }

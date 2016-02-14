@@ -15,14 +15,19 @@
  */
 package com.agapsys.security;
 
-public interface SecurityManager {
+public abstract class SecurityManager {
 	/** 
 	 * Checks if execution is allowed for given roles
 	 * @param requiredRoles required roles for execution
 	 * @return a boolean indicating if execution is allowed.
 	 */
-	public boolean isAllowed(String[] requiredRoles);
+	public abstract boolean isAllowed(String[] requiredRoles);
 	
-	/** Called if an execution is not allowed. */
-	public void onNotAllowed();
+	/** 
+	 * Called if an execution is not allowed.
+	 * @throws NotAllowedException if an execution is not allowed.
+	 */
+	protected void onNotAllowed() throws NotAllowedException {
+		throw new NotAllowedException();
+	}
 }

@@ -19,4 +19,7 @@ package com.agapsys.security;
  *
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
-public class NotAllowedException extends RuntimeException {}
+public class NotAllowedException extends RuntimeException {
+
+	public NotAllowedException() {}
+}
