@@ -21,12 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a class/method as secured
+ * Marks a method as unsecured.
+ * This annotation is useful when a method should not be secured even if class is annotated with {@linkplain Secured}.
  * @author Leandro Oliveira (leandro@agapsys.com)
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
-public @interface Secured {
-	/** @return required roles for method execution. */
-	String[] value()    default {};
+@Target(ElementType.METHOD)
+public @interface Unsecured {
 }

@@ -145,23 +145,27 @@ public class Security {
 			
 			if (!skipFrozenClasses || !cc.isFrozen()) {
 				CtMethod methods[] = cc.getDeclaredMethods();
-				Secured classSecured = (Secured) cc.getAnnotation(Secured.class);
+				Secured securedClassAnnotation = (Secured) cc.getAnnotation(Secured.class);
 
 				for (CtMethod method : methods) {
-					Secured methodSecured = (Secured) method.getAnnotation(Secured.class);
+					Secured securedMethodAnnotation = (Secured) method.getAnnotation(Secured.class);
+					Unsecured unsecuredMethodAnnotation = (Unsecured) method.getAnnotation(Unsecured.class);
+					
+					if (securedMethodAnnotation != null && unsecuredMethodAnnotation != null)
+						throw new RuntimeException(String.format("Method '%s' has both '%s' and '%s' annotations", method.getLongName(), Secured.class.getName(), Unsecured.class.getName()));
 
-					if (classSecured != null || methodSecured != null) {
+					if (unsecuredMethodAnnotation == null && (securedClassAnnotation != null || securedMethodAnnotation != null)) {
 						Set<String> roles = new LinkedHashSet<>();
 
-						if (classSecured != null) {
-							for (String role : classSecured.value()) {
+						if (securedClassAnnotation != null) {
+							for (String role : securedClassAnnotation.value()) {
 								if (!roles.add(role))
 									throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, cc.getName()));
 							}
 						}
 
-						if (methodSecured != null) {
-							for (String role : methodSecured.value()) {
+						if (securedMethodAnnotation != null) {
+							for (String role : securedMethodAnnotation.value()) {
 								if (!roles.add(role))
 									throw new RuntimeException(String.format("Duplicate role definition (%s) for %s", role, method.getLongName()));
 							}

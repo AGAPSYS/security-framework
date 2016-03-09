@@ -39,7 +39,7 @@ public class SecurityTest {
 	
 	private final MockedSecurityManager securityManager = (MockedSecurityManager) Security.getSecurityManager();
 	
-	// private ProtectedClass pc; // <-- Uncommenting this will cause javassist.CannotCompileException due to duplicate class definition
+	// private SecuredClass pc; // <-- Uncommenting this will cause javassist.CannotCompileException due to duplicate class definition
 	
 	@Before
 	public void before() {
@@ -56,17 +56,17 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		SecuredClass protectedClass = new SecuredClass();
-		protectedClass.unsecured();
-		protectedClass.unsecuredWithAnnotation();
-		SecuredClass.staticUnsecured();
-		SecuredClass.staticUnsecuredWithAnnotation();
+		protectedClass.implicitSecured();
+		protectedClass.secured2();
+		SecuredClass.staticImplicitSecured();
+		SecuredClass.staticSecured2();
 	}
 	
 	@Test
 	public void staticMethods() {
 		NotAllowedException error;
 		
-		// staticProtectedWithArgs OK ------------------------------------
+		// staticSecuredWithArgs OK ------------------------------------
 		error = null;
 		
 		try {
@@ -77,7 +77,7 @@ public class SecurityTest {
 		}
 		
 		Assert.assertNull(error);
-		// staticProtectedWithArgs REJECTED ------------------------------------
+		// staticSecuredWithArgs REJECTED ------------------------------------
 		error = null;
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
@@ -88,7 +88,7 @@ public class SecurityTest {
 		}
 		
 		Assert.assertNotNull(error);
-		// staticProtected OK---------------------------------------------------
+		// staticSecured OK---------------------------------------------------
 		error = null;
 		
 		try {
@@ -99,7 +99,7 @@ public class SecurityTest {
 		}
 		
 		Assert.assertNull(error);
-		// staticProtected REJECTED --------------------------------------------
+		// staticSecured REJECTED --------------------------------------------
 		error = null;
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
@@ -115,9 +115,9 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			SecuredClass.staticUnsecuredWithAnnotation();
+			SecuredClass.staticSecured2();
 			securityManager.setAvailableRoles("CLASS_ROLE", "test");
-			SecuredClass.staticUnsecuredWithAnnotation();
+			SecuredClass.staticSecured2();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -128,7 +128,7 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			SecuredClass.staticUnsecuredWithAnnotation();
+			SecuredClass.staticSecured2();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -139,9 +139,9 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 		
 		try {
-			SecuredClass.staticUnsecured();
+			SecuredClass.staticImplicitSecured();
 			securityManager.setAvailableRoles("CLASS_ROLE", "test");
-			SecuredClass.staticUnsecured();
+			SecuredClass.staticImplicitSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -152,13 +152,13 @@ public class SecurityTest {
 		securityManager.clearRoles();
 		
 		try {
-			SecuredClass.staticUnsecured();
+			SecuredClass.staticImplicitSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
 		
 		Assert.assertNotNull(error);
-		// staticChainProtected OK ---------------------------------------------
+		// staticChainSecured OK ---------------------------------------------
 		error = null;
 		securityManager.clearRoles();
 
@@ -170,7 +170,7 @@ public class SecurityTest {
 		}
 		
 		Assert.assertNull(error);
-		// staticChainProtected REJECTED ---------------------------------------
+		// staticChainSecured REJECTED ---------------------------------------
 		error = null;
 		securityManager.clearRoles();
 
@@ -188,7 +188,7 @@ public class SecurityTest {
 		NotAllowedException error;
 		SecuredClass protectedClass = new SecuredClass();
 		
-		// staticProtectedWithArgs OK ------------------------------------
+		// staticSecuredWithArgs OK ------------------------------------
 		error = null;
 		
 		try {
@@ -199,7 +199,7 @@ public class SecurityTest {
 		}
 		
 		Assert.assertNull(error);
-		// staticProtectedWithArgs REJECTED ------------------------------------
+		// staticSecuredWithArgs REJECTED ------------------------------------
 		error = null;
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
@@ -210,7 +210,7 @@ public class SecurityTest {
 		}
 		
 		Assert.assertNotNull(error);
-		// staticProtected OK---------------------------------------------------
+		// staticSecured OK---------------------------------------------------
 		error = null;
 		
 		try {
@@ -221,7 +221,7 @@ public class SecurityTest {
 		}
 		
 		Assert.assertNull(error);
-		// staticProtected REJECTED --------------------------------------------
+		// staticSecured REJECTED --------------------------------------------
 		error = null;
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
@@ -237,7 +237,7 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			protectedClass.unsecuredWithAnnotation();
+			protectedClass.secured2();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -252,7 +252,7 @@ public class SecurityTest {
 		securityManager.setAvailableRoles("CLASS_ROLE");
 
 		try {
-			protectedClass.unsecuredWithAnnotation();
+			protectedClass.secured2();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -263,29 +263,29 @@ public class SecurityTest {
 		securityManager.clearRoles();
 
 		try {
-			protectedClass.unsecured();
+			protectedClass.implicitSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
 		
 		Assert.assertNotNull(error);
-		// staticChainProtected OK ---------------------------------------------
+		// staticChainSecured OK ---------------------------------------------
 		error = null;
 
 		try {
 			securityManager.setAvailableRoles("CLASS_ROLE", "ROLE");
-			protectedClass.chainProtected();
+			protectedClass.chainSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
 		
 		Assert.assertNull(error);
-		// staticChainProtected REJECTED ---------------------------------------
+		// staticChainSecured REJECTED ---------------------------------------
 		error = null;
 		securityManager.clearRoles();
 
 		try {
-			protectedClass.chainProtected();
+			protectedClass.chainSecured();
 		} catch (NotAllowedException ex) {
 			error = ex;
 		}
@@ -297,7 +297,7 @@ public class SecurityTest {
 	public void innerStaticClassTest() {
 		NotAllowedException error;
 
-		// staticProtectedWithArgs OK ------------------------------------
+		// staticSecuredWithArgs OK ------------------------------------
 		error = null;
 		
 		try {
@@ -309,7 +309,7 @@ public class SecurityTest {
 		
 		
 		Assert.assertNull(error);
-		// staticProtectedWithArgs REJECTED ------------------------------
+		// staticSecuredWithArgs REJECTED ------------------------------
 		error = null;
 		
 		try {
@@ -329,7 +329,7 @@ public class SecurityTest {
 		SecuredClass securedObj = new SecuredClass();
 		InnerClass innerObj = securedObj.new InnerClass();
 		
-		// staticProtectedWithArgs OK ------------------------------------
+		// staticSecuredWithArgs OK ------------------------------------
 		error = null;
 		
 		try {
@@ -341,7 +341,7 @@ public class SecurityTest {
 		
 		
 		Assert.assertNull(error);
-		// staticProtectedWithArgs REJECTED ------------------------------
+		// staticSecuredWithArgs REJECTED ------------------------------
 		error = null;
 		
 		try {
@@ -353,5 +353,19 @@ public class SecurityTest {
 		
 		
 		Assert.assertNotNull(error);
+	}
+	
+	@Test
+	public void unsecuredMethodTest() {
+		NotAllowedException error = null;
+		SecuredClass securedObj = new SecuredClass();
+		
+		try {
+			securedObj.unsecured();
+		} catch (NotAllowedException t) {
+			error = t;
+		}
+		
+		Assert.assertNull(error);
 	}
 }

@@ -31,6 +31,7 @@ public class SecuredClass {
 		}
 	}
 	
+	@Unsecured
 	private static void println(String msg, Object... msgArgs) {
 		if (msgArgs.length > 0) {
 			msg = String.format(msg, msgArgs);
@@ -55,12 +56,12 @@ public class SecuredClass {
 	}
 
 	@Secured
-	public static void staticUnsecuredWithAnnotation() {
-		println("staticUnsecuredWithAnnotation()");
+	public static void staticSecured2() {
+		println("staticSecured2()");
 	}
 
-	public static void staticUnsecured() {
-		println("staticUnsecured()");
+	public static void staticImplicitSecured() {
+		println("staticImplicitSecured()");
 	}
 
 	public static void staticChainSecured() {
@@ -88,16 +89,21 @@ public class SecuredClass {
 	}
 
 	@Secured
-	public void unsecuredWithAnnotation() {
-		println("unsecuredWithAnnotation()");
+	public void secured2() {
+		println("secured2()");
 	}
 
+	public void implicitSecured() {
+		println("implicitSecured()");
+	}
+
+	public void chainSecured() {
+		secured();
+	}
+	
+	@Unsecured
 	public void unsecured() {
 		println("unsecured()");
-	}
-
-	public void chainProtected() {
-		secured();
 	}
 	// =========================================================================
 }
