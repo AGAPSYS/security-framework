@@ -199,19 +199,15 @@ public class Security {
 	 * Returns the {@linkplain SecurityManager} instance used by framework.
 	 *
 	 * @return the {@linkplain SecurityManager} instance used by framework.
-	 * @throws IllegalStateException if framework is not running (see
-	 * {@linkplain Security#isRunning()})
 	 */
-	public static SecurityManager getSecurityManager() throws IllegalStateException {
+	public static SecurityManager getSecurityManager() {
 		return securityManager;
 	}
 
 	/**
 	 * Initializes security framework
 	 *
-	 * @param securityManager security framework to be used. Passing
-	 * <code>null</code> implies in no security.
-	 * @throws IllegalStateException if framework is already running.
+	 * @param securityManager security framework to be used. Passing <code>null</code> implies in no security.
 	 */
 	protected static void init(SecurityManager securityManager) {
 		init(Security.class.getClassLoader(), securityManager);
